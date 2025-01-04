@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neu.carbon.wms.mapper.WmsInWarehouseApplyMapper">
+    
+    <resultMap type="WmsInWarehouseApply" id="WmsInWarehouseApplyResult">
+        <result property="id"    column="id"    />
+        <result property="serialNo"    column="serial_no"    />
+        <result property="bizBillId"    column="biz_bill_id"    />
+        <result property="bizType"    column="biz_type"    />
+        <result property="supplierId"    column="supplier_id"    />
+        <result property="contractId"    column="contract_id"    />
+        <result property="contractType"    column="contract_type"    />
+        <result property="applyType"    column="apply_type"    />
+        <result property="applyUser"    column="apply_user"    />
+        <result property="applyTime"    column="apply_time"    />
+        <result property="applyStatus"    column="apply_status"    />
+        <result property="auditUser"    column="audit_user"    />
+        <result property="auditTime"    column="audit_time"    />
+        <result property="auditStatus"    column="audit_status"    />
+        <result property="auditComment"    column="audit_comment"    />
+        <result property="remark"    column="remark"    />
+        <result property="billStatus"    column="bill_status"    />
+    </resultMap>
+
+    <resultMap id="WmsInWarehouseApplyWmsInWarehouseApplyDetailResult" type="WmsInWarehouseApply" extends="WmsInWarehouseApplyResult">
+        <collection property="wmsInWarehouseApplyDetailList" notNullColumn="id" javaType="java.util.List" resultMap="WmsInWarehouseApplyDetailResult" />
+    </resultMap>
+
+    <resultMap type="WmsInWarehouseApplyDetail" id="WmsInWarehouseApplyDetailResult">
+        <result property="id"    column="id"    />
+        <result property="applyId"    column="apply_id"    />
+        <result property="materialId"    column="material_id"    />
+        <result property="warehouseId"    column="warehouse_id"    />
+        <result property="whLocationId"    column="wh_location_id"    />
+        <result property="whRegionId"    column="wh_region_id"    />
+        <result property="totalQuantity"    column="total_quantity"    />
+        <result property="inQuantity"    column="in_quantity"    />
+        <result property="serialNo"    column="serial_no"    />
+        <result property="batchNo"    column="batch_no"    />
+        <result property="productDate"    column="product_date"    />
+        <result property="manufacturer"    column="manufacturer"    />
+    </resultMap>
+
+    <sql id="selectWmsInWarehouseApplyVo">
+        select id, serial_no, biz_bill_id, biz_type, supplier_id, contract_id, contract_type, apply_type, apply_user, apply_time, apply_status, audit_user, audit_time, audit_status, audit_comment, remark, bill_status from wms_in_warehouse_apply
+    </sql>
+
+    <select id="selectWmsInWarehouseApplyList" parameterType="WmsInWarehouseApply" resultMap="WmsInWarehouseApplyResult">
+        <include refid="selectWmsInWarehouseApplyVo"/>
+        <where>  
+            <if test="serialNo != null  and serialNo != ''"> and serial_no like concat('%', #{serialNo}, '%')</if>
+            <if test="bizBillId != null "> and biz_bill_id = #{bizBillId}</if>
+            <if test="bizType != null  and bizType != ''"> and biz_type = #{bizType}</if>
+            <if test="supplierId != null "> and supplier_id = #{supplierId}</if>
+            <if test="contractId != null "> and contract_id = #{contractId}</if>
+            <if test="contractType != null  and contractType != ''"> and contract_type = #{contractType}</if>
+            <if test="applyType != null  and applyType != ''"> and apply_type = #{applyType}</if>
+            <if test="applyUser != null  and applyUser != ''"> and apply_user = #{applyUser}</if>
+            <if test="params.beginApplyTime != null and params.beginApplyTime != '' and params.endApplyTime != null and params.endApplyTime != ''"> and apply_time between #{params.beginApplyTime} and #{params.endApplyTime}</if>
+            <if test="applyStatus != null  and applyStatus != ''"> and apply_status = #{applyStatus}</if>
+            <if test="params.applyStatusList != null"> and apply_status in
+            	<foreach collection="params.applyStatusList" item="applyStatus" open="(" close=")" separator=",">
+            		#{applyStatus}
+            	</foreach>
+            </if>
+            <if test="auditUser != null  and auditUser != ''"> and audit_user = #{auditUser}</if>
+            <if test="params.beginAuditTime != null and params.beginAuditTime != '' and params.endAuditTime != null and params.endAuditTime != ''"> and audit_time between #{params.beginAuditTime} and #{params.endAuditTime}</if>
+            <if test="auditStatus != null  and auditStatus != ''"> and audit_status = #{auditStatus}</if>
+        	<if test="billStatus != null  and billStatus != ''"> and bill_status = #{billStatus}</if>
+        </where>
+    </select>
+    
+    <select id="selectWmsInWarehouseApplyById" parameterType="Long" resultMap="WmsInWarehouseApplyWmsInWarehouseApplyDetailResult">
+        select a.id, a.serial_no, a.biz_bill_id, a.biz_type, a.supplier_id, a.contract_id, a.contract_type, a.apply_type, a.apply_user, a.apply_time, a.apply_status, a.audit_user, a.audit_time, a.audit_status, a.audit_comment, a.remark, a.bill_status,
+            b.id, b.apply_id, b.material_id, b.warehouse_id, b.wh_location_id, b.wh_region_id, b.total_quantity, b.in_quantity, b.serial_no, b.batch_no, b.product_date, b.manufacturer
+        from wms_in_warehouse_apply a
+        left join wms_in_warehouse_apply_detail b on b.apply_id = a.id
+        where a.id = #{id}
+    </select>
+        
+    <insert id="insertWmsInWarehouseApply" parameterType="WmsInWarehouseApply" useGeneratedKeys="true" keyProperty="id">
+        insert into wms_in_warehouse_apply
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="serialNo != null">serial_no,</if>
+            <if test="bizBillId != null">biz_bill_id,</if>
+            <if test="bizType != null">biz_type,</if>
+            <if test="supplierId != null">supplier_id,</if>
+            <if test="contractId != null">contract_id,</if>
+            <if test="contractType != null">contract_type,</if>
+            <if test="applyType != null">apply_type,</if>
+            <if test="applyUser != null">apply_user,</if>
+            <if test="applyTime != null">apply_time,</if>
+            <if test="applyStatus != null">apply_status,</if>
+            <if test="auditUser != null">audit_user,</if>
+            <if test="auditTime != null">audit_time,</if>
+            <if test="auditStatus != null">audit_status,</if>
+            <if test="auditComment != null">audit_comment,</if>
+            <if test="remark != null">remark,</if>
+            <if test="billStatus != null">bill_status,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="serialNo != null">#{serialNo},</if>
+            <if test="bizBillId != null">#{bizBillId},</if>
+            <if test="bizType != null">#{bizType},</if>
+            <if test="supplierId != null">#{supplierId},</if>
+            <if test="contractId != null">#{contractId},</if>
+            <if test="contractType != null">#{contractType},</if>
+            <if test="applyType != null">#{applyType},</if>
+            <if test="applyUser != null">#{applyUser},</if>
+            <if test="applyTime != null">#{applyTime},</if>
+            <if test="applyStatus != null">#{applyStatus},</if>
+            <if test="auditUser != null">#{auditUser},</if>
+            <if test="auditTime != null">#{auditTime},</if>
+            <if test="auditStatus != null">#{auditStatus},</if>
+            <if test="auditComment != null">#{auditComment},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="billStatus != null">#{billStatus},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWmsInWarehouseApply" parameterType="WmsInWarehouseApply">
+        update wms_in_warehouse_apply
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="serialNo != null">serial_no = #{serialNo},</if>
+            <if test="bizBillId != null">biz_bill_id = #{bizBillId},</if>
+            <if test="bizType != null">biz_type = #{bizType},</if>
+            <if test="supplierId != null">supplier_id = #{supplierId},</if>
+            <if test="contractId != null">contract_id = #{contractId},</if>
+            <if test="contractType != null">contract_type = #{contractType},</if>
+            <if test="applyType != null">apply_type = #{applyType},</if>
+            <if test="applyUser != null">apply_user = #{applyUser},</if>
+            <if test="applyTime != null">apply_time = #{applyTime},</if>
+            <if test="applyStatus != null">apply_status = #{applyStatus},</if>
+            <if test="auditUser != null">audit_user = #{auditUser},</if>
+            audit_time = #{auditTime},
+            <if test="auditStatus != null">audit_status = #{auditStatus},</if>
+            <if test="auditComment != null">audit_comment = #{auditComment},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="billStatus != null">bill_status = #{billStatus},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteWmsInWarehouseApplyById" parameterType="Long">
+        delete from wms_in_warehouse_apply where id = #{id}
+    </delete>
+
+    <delete id="deleteWmsInWarehouseApplyByIds" parameterType="String">
+        delete from wms_in_warehouse_apply where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+    <delete id="deleteWmsInWarehouseApplyDetailByApplyIds" parameterType="String">
+        delete from wms_in_warehouse_apply_detail where apply_id in 
+        <foreach item="applyId" collection="array" open="(" separator="," close=")">
+            #{applyId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteWmsInWarehouseApplyDetailByApplyId" parameterType="Long">
+        delete from wms_in_warehouse_apply_detail where apply_id = #{applyId}
+    </delete>
+
+    <insert id="batchWmsInWarehouseApplyDetail">
+        insert into wms_in_warehouse_apply_detail( apply_id, material_id, warehouse_id, wh_location_id, wh_region_id, total_quantity, in_quantity, serial_no, batch_no, product_date, manufacturer) values
+		<foreach item="item" index="index" collection="list" separator=",">
+            ( #{item.applyId}, #{item.materialId}, #{item.warehouseId}, #{item.whLocationId}, #{item.whRegionId}, #{item.totalQuantity}, #{item.inQuantity}, #{item.serialNo}, #{item.batchNo}, #{item.productDate}, #{item.manufacturer})
+        </foreach>
+    </insert>
+</mapper>

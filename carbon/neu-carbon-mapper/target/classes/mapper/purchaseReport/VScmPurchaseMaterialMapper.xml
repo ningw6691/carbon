@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neu.carbon.scm.mapper.VScmPurchaseMaterialMapper">
+    
+    <resultMap type="VScmPurchaseMaterial" id="VScmPurchaseMaterialResult">
+        <result property="contractId"    column="contract_id"    />
+        <result property="materialId"    column="material_id"    />
+        <result property="materialName"    column="material_name"    />
+        <result property="materialCode"    column="material_code"    />
+        <result property="materialModel"    column="material_model"    />
+        <result property="materialSpecification"    column="material_specification"    />
+        <result property="materialUnit"    column="material_unit"    />
+        <result property="price"    column="price"    />
+        <result property="quantity"    column="quantity"    />
+        <result property="amount"    column="amount"    />
+        <result property="supplierId"    column="supplier_id"    />
+        <result property="supplierName"    column="supplier_name"    />
+        <result property="contractNo"    column="contract_no"    />
+        <result property="signDate"    column="sign_date"    />
+    </resultMap>
+
+    <sql id="selectVScmPurchaseMaterialVo">
+        select contract_id, material_id, material_name, material_code, material_model, material_specification, material_unit, price, quantity, amount, supplier_id, supplier_name, contract_no, sign_date from v_scm_purchase_contract_detail
+    </sql>
+
+    <select id="selectVScmPurchaseMaterialList" parameterType="VScmPurchaseMaterial" resultMap="VScmPurchaseMaterialResult">
+        <include refid="selectVScmPurchaseMaterialVo"/>
+        <where>  
+            <if test="contractId != null "> and contract_id = #{contractId}</if>
+            <if test="materialId != null "> and material_id = #{materialId}</if>
+            <if test="materialName != null  and materialName != ''"> and material_name like concat('%', #{materialName}, '%')</if>
+            <if test="supplierId != null "> and supplier_id = #{supplierId}</if>
+            <if test="supplierName != null  and supplierName != ''"> and supplier_name like concat('%', #{supplierName}, '%')</if>
+            <if test="contractNo != null  and contractNo != ''"> and contract_no like concat('%', #{contractNo}, '%')</if>
+            <if test="params.beginSignDate != null and params.beginSignDate != '' and params.endSignDate != null and params.endSignDate != ''"> and sign_date between #{params.beginSignDate} and #{params.endSignDate}</if>
+        </where>
+    </select>
+
+
+
+
+
+
+    <resultMap type="RepContractArriveReturnDetail" id="RepContractArriveReturnDetailResult">
+        <result property="contractQuarter"    column="contract_quarter"    />
+        <result property="contractMonth"    column="contract_month"    />
+        <result property="materialId"    column="material_id"    />
+        <result property="materialName"    column="material_name"    />
+        <result property="purchaseNum"    column="purchase_num"    />
+        <result property="arriveNum"    column="arrive_num"    />
+        <result property="returnNum"    column="return_num"    />
+        <result property="inWarehouseNum"    column="in_warehouse_num"    />
+        <result property="purchaseAmount"    column="purchase_amount"    />
+        <result property="returnAmount"    column="return_amount"    />
+    </resultMap>
+
+
+
+    <select id="selectContractArriveReturnMonthReport" parameterType="RepContractArriveReturnDetail" resultMap="RepContractArriveReturnDetailResult">
+        select ym.month contract_month, material_id, material_name, purchase_num, arrive_num, return_num, in_warehouse_num, purchase_amount, return_amount
+        FROM
+            rep_year_month ym
+                LEFT JOIN (
+                SELECT
+                    pc.contract_month,
+                    pc.material_id,
+                    m.NAME AS material_name,
+                    IFNULL( pc.purchase_num, 0 ) purchase_num,
+                    IFNULL( pa.arrive_num, 0 ) arrive_num,
+                    IFNULL( pr.return_num, 0 ) return_num,
+                    ifnull( arrive_num - return_num, 0 ) in_warehouse_num,
+                    IFNULL( pc.purchase_amount, 0 ) purchase_amount,
+                    IFNULL( pa.arrive_amount, 0 ) arrive_amount,
+                    IFNULL( pr.return_amount, 0 ) return_amount
+                FROM
+                    (
+                        SELECT
+                            d.material_id,
+                            ifnull( sum( d.quantity ), 0 ) purchase_num,
+                            ifnull( sum( d.quantity * d.price ), 0 ) purchase_amount,
+                            MONTH ( c.sign_date ) AS contract_month
+                        FROM
+                            scm_purchase_contract c
+                            INNER JOIN scm_purchase_contract_detail d ON d.contract_id = c.id
+                        <where>
+                            c.audit_status = '1'
+                            <if test="supplierId != null "> and c.supplier_id = #{supplierId}</if>
+                            <if test="contractYear != null "> and date_format( c.sign_date, '%Y' ) = #{contractYear}</if>
+                        </where>
+                        GROUP BY
+                            contract_month,
+                            d.material_id
+                    ) pc
+                        LEFT JOIN (
+                        SELECT
+                            d.material_id,
+                            ifnull( sum( d.arrive_quantity ), 0 ) arrive_num,
+                            MONTH ( a.arrive_date ) AS arrive_month,
+                            sum( d.arrive_quantity * d.price ) AS arrive_amount
+                        FROM
+                            scm_purchase_arrive a
+                            INNER JOIN scm_purchase_arrive_detail d ON d.arrive_id = a.id
+                        <where>
+                            <if test="supplierId != null "> and a.supplier_id = #{supplierId}</if>
+                            <if test="contractYear != null "> and date_format( a.arrive_date, '%Y' ) = #{contractYear}</if>
+                        </where>
+                        GROUP BY
+                            arrive_month,
+                            d.material_id
+                    ) pa ON pa.material_id = pc.material_id
+                        AND pa.arrive_month = pc.contract_month
+                        LEFT JOIN (
+                        SELECT
+                            d.material_id,
+                            ifnull( sum( d.return_quantity ), 0 ) return_num,
+                            ifnull( sum( d.return_quantity * d.price ), 0 ) return_amount,
+                            MONTH ( r.return_date ) AS return_month
+                        FROM
+                            scm_purchase_return r
+                            INNER JOIN scm_purchase_return_detail d ON d.return_id = r.id
+                        <where>
+                            <if test="supplierId != null "> and r.supplier_id = #{supplierId}</if>
+                            <if test="contractYear != null "> and date_format( r.return_date, '%Y' ) = #{contractYear}</if>
+                        </where>
+                        GROUP BY
+                            return_month,
+                            d.material_id
+                    ) pr ON pr.material_id = pc.material_id
+                        AND pr.return_month = pc.contract_month
+                        LEFT JOIN wms_material_info m ON m.id = pc.material_id
+                    <where>
+                        <if test="materialName != null  and materialName != ''"> and m.name like concat('%', #{materialName}, '%')</if>
+                    </where>
+            ) tm ON tm.contract_month = ym.NO
+    </select>
+
+
+    <select id="selectContractArriveReturnQuarterReport" parameterType="RepContractArriveReturnDetail" resultMap="RepContractArriveReturnDetailResult">
+        select yq.quarter contract_quarter, material_id, material_name, purchase_num, arrive_num, return_num, in_warehouse_num, purchase_amount, return_amount
+        FROM
+        rep_year_quarter yq
+        LEFT JOIN (
+        SELECT
+        pc.contract_quarter,
+        pc.material_id,
+        m.NAME AS material_name,
+        IFNULL( pc.purchase_num, 0 ) purchase_num,
+        IFNULL( pa.arrive_num, 0 ) arrive_num,
+        IFNULL( pr.return_num, 0 ) return_num,
+        ifnull( arrive_num - return_num, 0 ) in_warehouse_num,
+        IFNULL( pc.purchase_amount, 0 ) purchase_amount,
+        IFNULL( pa.arrive_amount, 0 ) arrive_amount,
+        IFNULL( pr.return_amount, 0 ) return_amount
+        FROM
+        (
+        SELECT
+        d.material_id,
+        ifnull( sum( d.quantity ), 0 ) purchase_num,
+        ifnull( sum( d.quantity * d.price ), 0 ) purchase_amount,
+        QUARTER ( c.sign_date ) AS contract_quarter
+        FROM
+        scm_purchase_contract c
+        INNER JOIN scm_purchase_contract_detail d ON d.contract_id = c.id
+        <where>
+            c.audit_status = '1'
+            <if test="supplierId != null "> and c.supplier_id = #{supplierId}</if>
+            <if test="contractYear != null "> and date_format( c.sign_date, '%Y' ) = #{contractYear}</if>
+        </where>
+        GROUP BY
+        contract_quarter,
+        d.material_id
+        ) pc
+        LEFT JOIN (
+        SELECT
+        d.material_id,
+        ifnull( sum( d.arrive_quantity ), 0 ) arrive_num,
+        QUARTER ( a.arrive_date ) AS arrive_quarter,
+        sum( d.arrive_quantity * d.price ) AS arrive_amount
+        FROM
+        scm_purchase_arrive a
+        INNER JOIN scm_purchase_arrive_detail d ON d.arrive_id = a.id
+        <where>
+            <if test="supplierId != null "> and a.supplier_id = #{supplierId}</if>
+            <if test="contractYear != null "> and date_format( a.arrive_date, '%Y' ) = #{contractYear}</if>
+        </where>
+        GROUP BY
+        arrive_quarter,
+        d.material_id
+        ) pa ON pa.material_id = pc.material_id
+        AND pa.arrive_quarter = pc.contract_quarter
+        LEFT JOIN (
+        SELECT
+        d.material_id,
+        ifnull( sum( d.return_quantity ), 0 ) return_num,
+        ifnull( sum( d.return_quantity * d.price ), 0 ) return_amount,
+        QUARTER ( r.return_date ) AS return_quarter
+        FROM
+        scm_purchase_return r
+        INNER JOIN scm_purchase_return_detail d ON d.return_id = r.id
+        <where>
+            <if test="supplierId != null "> and r.supplier_id = #{supplierId}</if>
+            <if test="contractYear != null "> and date_format( r.return_date, '%Y' ) = #{contractYear}</if>
+        </where>
+        GROUP BY
+        return_quarter,
+        d.material_id
+        ) pr ON pr.material_id = pc.material_id
+        AND pr.return_quarter = pc.contract_quarter
+        LEFT JOIN wms_material_info m ON m.id = pc.material_id
+        <where>
+            <if test="materialName != null  and materialName != ''"> and m.name like concat('%', #{materialName}, '%')</if>
+        </where>
+        ) tm ON tm.contract_quarter = yq.NO
+    </select>
+
+
+
+</mapper>

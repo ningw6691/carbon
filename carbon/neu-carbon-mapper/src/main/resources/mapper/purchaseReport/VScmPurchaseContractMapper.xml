@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neu.carbon.scm.mapper.VScmPurchaseContractMapper">
+    
+    <resultMap type="VScmPurchaseContract" id="VScmPurchaseContractResult">
+        <result property="contractId"    column="contract_id"    />
+        <result property="contractNo"    column="contract_no"    />
+        <result property="supplierId"    column="supplier_id"    />
+        <result property="applyId"    column="apply_id"    />
+        <result property="applyNo"    column="apply_no"    />
+        <result property="supplierName"    column="supplier_name"    />
+        <result property="contractAmount"    column="contract_amount"    />
+        <result property="contractYear"    column="contract_year"    />
+        <result property="contractQuarter"    column="contract_quarter"    />
+        <result property="contractMonth"    column="contract_month"    />
+        <result property="contractYearMonth"    column="contract_year_month"    />
+        <result property="contractDate"    column="contract_date"    />
+    </resultMap>
+
+    <sql id="selectVScmPurchaseContractVo">
+        select contract_id, contract_no, supplier_id, apply_id, apply_no, supplier_name, contract_amount, contract_year, contract_quarter, contract_month, contract_year_month, contract_date from v_scm_purchase_contract
+    </sql>
+
+    <select id="selectVScmPurchaseContractList" parameterType="VScmPurchaseContract" resultMap="VScmPurchaseContractResult">
+        <include refid="selectVScmPurchaseContractVo"/>
+        <where>  
+            <if test="contractId != null "> and contract_id = #{contractId}</if>
+            <if test="contractNo != null  and contractNo != ''"> and contract_no like concat('%', #{contractNo}, '%')</if>
+            <if test="supplierId != null "> and supplier_id = #{supplierId}</if>
+            <if test="applyId != null "> and apply_id = #{applyId}</if>
+            <if test="applyNo != null  and applyNo != ''"> and apply_no like concat('%', #{applyNo}, '%')</if>
+            <if test="supplierName != null  and supplierName != ''"> and supplier_name like concat('%', #{supplierName}, '%')</if>
+            <if test="contractYear != null  and contractYear != ''"> and contract_year = #{contractYear}</if>
+            <if test="contractQuarter != null  and contractQuarter != ''"> and contract_quarter = #{contractQuarter}</if>
+            <if test="contractMonth != null  and contractMonth != ''"> and contract_month = #{contractMonth}</if>
+            <if test="contractYearMonth != null  and contractYearMonth != ''"> and contract_year_month = #{contractYearMonth}</if>
+            <if test="contractDate != null  and contractDate != ''"> and contract_date = #{contractDate}</if>
+        </where>
+    </select>
+    
+    <select id="selectVScmPurchaseContractById" parameterType="Long" resultMap="VScmPurchaseContractResult">
+        <include refid="selectVScmPurchaseContractVo"/>
+        where contract_id = #{contractId}
+    </select>
+
+    <select id="selectMonthReport" parameterType="VScmPurchaseContract" resultMap="VScmPurchaseContractResult">
+        SELECT
+        ym.`month` as contract_month,
+        IFNULL(tm.total,0) contract_amount,
+        tm.supplier_id,
+        tm.supplier_name,
+        tm.apply_no,
+        tm.contract_no
+        FROM
+        rep_year_month ym
+        LEFT JOIN (
+        SELECT
+        supplier_id,
+        supplier_name,
+        IFNULL(SUM(contract_amount), 0) total,
+        contract_month,
+        apply_no,
+        contract_no
+        FROM
+        v_scm_purchase_contract
+        <where>
+            <if test="contractYear != null  and contractYear != ''"> and contract_year = #{contractYear}</if>
+            <if test="supplierId != null "> and supplier_id = #{supplierId}</if>
+            <if test="applyNo != null  and applyNo != ''"> and apply_no like concat('%', #{applyNo}, '%')</if>
+            <if test="contractNo != null and contractNo != ''"> and contract_no like concat('%', #{contractNo}, '%')</if>
+        </where>
+        GROUP BY
+        contract_month, supplier_id, apply_no, contract_no
+        ) tm ON ym.NO = tm.contract_month
+        ORDER BY ym.no
+    </select>
+
+
+    <select id="selectQuarterReport" parameterType="VScmPurchaseContract" resultMap="VScmPurchaseContractResult">
+        SELECT
+        yq.`quarter` as contract_quarter,
+        IFNULL(tm.total,0) contract_amount,
+        tm.supplier_id,
+        tm.supplier_name,
+        tm.apply_no,
+        tm.contract_no
+        FROM
+        rep_year_quarter yq
+        LEFT JOIN (
+        SELECT
+        supplier_id,
+        supplier_name,
+        IFNULL(SUM(contract_amount), 0) total,
+        contract_quarter,
+        apply_no,
+        contract_no
+        FROM
+        v_scm_purchase_contract
+        <where>
+            <if test="contractYear != null  and contractYear != ''"> and contract_year = #{contractYear}</if>
+            <if test="supplierId != null "> and supplier_id = #{supplierId}</if>
+            <if test="applyNo != null  and applyNo != ''"> and apply_no like concat('%', #{applyNo}, '%')</if>
+            <if test="contractNo != null and contractNo != ''"> and contract_no like concat('%', #{contractNo}, '%')</if>
+        </where>
+        GROUP BY
+        contract_quarter, supplier_id, apply_no, contract_no
+        ) tm ON yq.NO = tm.contract_quarter
+        ORDER BY yq.no
+    </select>
+
+    <select id="selectMonthSupplierReport" parameterType="VScmPurchaseContract" resultMap="VScmPurchaseContractResult">
+        SELECT
+        ym.`month` as contract_month,
+        IFNULL(tm.total,0) contract_amount,
+        tm.supplier_id,
+        tm.supplier_name
+        FROM
+        rep_year_month ym
+        LEFT JOIN (
+        SELECT
+        supplier_id,
+        supplier_name,
+        IFNULL(SUM(contract_amount), 0) total,
+        contract_month,
+        apply_no,
+        contract_no
+        FROM
+        v_scm_purchase_contract
+        <where>
+            <if test="contractYear != null  and contractYear != ''"> and contract_year = #{contractYear}</if>
+            <if test="supplierId != null "> and supplier_id = #{supplierId}</if>
+        </where>
+        GROUP BY
+        contract_month, supplier_id
+        ) tm ON ym.NO = tm.contract_month
+        ORDER BY ym.no
+    </select>
+
+
+    <select id="selectQuarterSupplierReport" parameterType="VScmPurchaseContract" resultMap="VScmPurchaseContractResult">
+        SELECT
+        yq.`quarter` as contract_quarter,
+        IFNULL(tm.total,0) contract_amount,
+        tm.supplier_id,
+        tm.supplier_name
+        FROM
+        rep_year_quarter yq
+        LEFT JOIN (
+        SELECT
+        supplier_id,
+        supplier_name,
+        IFNULL(SUM(contract_amount), 0) total,
+        contract_quarter,
+        apply_no,
+        contract_no
+        FROM
+        v_scm_purchase_contract
+        <where>
+            <if test="contractYear != null  and contractYear != ''"> and contract_year = #{contractYear}</if>
+            <if test="supplierId != null "> and supplier_id = #{supplierId}</if>
+        </where>
+        GROUP BY
+        contract_quarter, supplier_id
+        ) tm ON yq.NO = tm.contract_quarter
+        ORDER BY yq.no
+    </select>
+        
+</mapper>

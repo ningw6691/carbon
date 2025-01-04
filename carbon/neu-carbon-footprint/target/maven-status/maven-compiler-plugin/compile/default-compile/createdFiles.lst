@@ -1,0 +1,4 @@
+com\neu\carbon\footprint\controller\CfConfigEmissionFixedController.class
+com\neu\carbon\footprint\controller\CfConfigEmissionChangeController.class
+com\neu\carbon\footprint\controller\CfConfigNeutralController.class
+com\neu\carbon\footprint\controller\CfElectricCheckpointController.class

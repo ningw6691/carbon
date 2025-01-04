@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neu.carbon.wms.mapper.WmsDispatchBillMapper">
+
+    <resultMap type="WmsDispatchBill" id="WmsDispatchBillResult">
+        <result property="id" column="id"/>
+        <result property="serialNo" column="serial_no"/>
+        <result property="carrierApplyId" column="carrier_apply_id"/>
+        <result property="outWarehouseId" column="out_warehouse_id"/>
+        <result property="saleOrderId" column="sale_order_id"/>
+        <result property="remark" column="remark"/>
+        <result property="orderNo" column="order_no"/>
+        <result property="customerId" column="customer_id"/>
+        <result property="deliveryDate" column="delivery_date"/>
+        <result property="address" column="shipping_address"/>
+        <result property="workStaff" column="work_staff"/>
+        <result property="carrierNo" column="carrier_no"/>
+        <result property="carrierUser" column="carrier_user"/>
+        <result property="distance" column="distance"/>
+        <result property="outWhNo" column="out_wh_no"/>
+        <result property="customerContact" column="contact"/>
+        <result property="customerContactTel" column="contact_tel"/>
+    </resultMap>
+
+    <resultMap id="WmsDispatchBillWmsDispatchBillDetailResult" type="WmsDispatchBill" extends="WmsDispatchBillResult">
+        <collection property="wmsDispatchBillDetailList" notNullColumn="id" javaType="java.util.List"
+                    resultMap="WmsDispatchBillDetailResult"/>
+    </resultMap>
+
+    <resultMap type="WmsDispatchBillDetail" id="WmsDispatchBillDetailResult">
+        <result property="id" column="id"/>
+        <result property="dispatchBillId" column="dispatch_bill_id"/>
+        <result property="plateNo" column="plate_no"/>
+        <result property="driver" column="driver"/>
+        <result property="contactTel" column="driver_contact_tel"/>
+        <result property="truckLoad" column="load"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    <sql id="selectWmsDispatchBillVo">
+        SELECT t.id,
+               t.serial_no,
+               t.carrier_apply_id,
+               t.out_warehouse_id,
+               t.sale_order_id,
+               t.remark,
+               c.`serial_no` carrier_no,
+               c.`carrier_user`,
+               c.`distance`,
+               c.`contact`,
+               c.`contact_tel`,
+               c.`delivery_date`,
+               c.`shipping_address`,
+               c.`customer_id`,
+               w.`serial_no` out_wh_no
+        FROM wms_dispatch_bill t
+                 LEFT JOIN `wms_out_warehouse_apply` w ON t.`out_warehouse_id` = w.`id`
+                 LEFT JOIN `wms_carrier_apply` c ON t.`carrier_apply_id` = c.`id`
+    </sql>
+
+    <select id="selectWmsDispatchBillList" parameterType="WmsDispatchBill" resultMap="WmsDispatchBillResult">
+        <include refid="selectWmsDispatchBillVo"/>
+        <where>
+            <if test="serialNo != null and  serialNo != ''">and t.serial_no like concat('%', #{serialNo}, '%')</if>
+            <if test="carrierNo != null and  carrierNo != ''">and c.serial_no like concat('%', #{carrierNo}, '%')</if>
+            <if test="outWhNo != null and  outWhNo != ''">and w.serial_no like concat('%', #{outWhNo}, '%')</if>
+            <if test="carrierApplyId != null ">and t.carrier_apply_id = #{carrierApplyId}</if>
+        </where>
+    </select>
+
+    <select id="selectWmsDispatchBillById" parameterType="Long" resultMap="WmsDispatchBillWmsDispatchBillDetailResult">
+        select a.id,
+               a.serial_no,
+               a.carrier_apply_id,
+               a.out_warehouse_id,
+               a.sale_order_id,
+               a.remark,
+               c.`serial_no` carrier_no,
+               c.`carrier_user`,
+               c.`distance`,
+               c.`contact`,
+               c.`contact_tel`,
+               c.`delivery_date`,
+               c.`shipping_address`,
+               c.`customer_id`,
+               w.`serial_no` out_wh_no,
+               b.id,
+               b.dispatch_bill_id,
+               b.plate_no,
+               b.driver,
+               b.contact_tel driver_contact_tel,
+               b.load,
+               b.remark
+        from wms_dispatch_bill a
+                 LEFT JOIN `wms_out_warehouse_apply` w ON a.`out_warehouse_id` = w.`id`
+                 LEFT JOIN `wms_carrier_apply` c ON a.`carrier_apply_id` = c.`id`
+                 left join wms_dispatch_bill_detail b on b.dispatch_bill_id = a.id
+        where a.id = #{id}
+    </select>
+
+    <insert id="insertWmsDispatchBill" parameterType="WmsDispatchBill" useGeneratedKeys="true" keyProperty="id">
+        insert into wms_dispatch_bill
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="serialNo != null">serial_no,</if>
+            <if test="carrierApplyId != null">carrier_apply_id,</if>
+            <if test="outWarehouseId != null">out_warehouse_id,</if>
+            <if test="saleOrderId != null">sale_order_id,</if>
+            <if test="remark != null">remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="serialNo != null">#{serialNo},</if>
+            <if test="carrierApplyId != null">#{carrierApplyId},</if>
+            <if test="outWarehouseId != null">#{outWarehouseId},</if>
+            <if test="saleOrderId != null">#{saleOrderId},</if>
+            <if test="remark != null">#{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateWmsDispatchBill" parameterType="WmsDispatchBill">
+        update wms_dispatch_bill
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="serialNo != null">serial_no = #{serialNo},</if>
+            <if test="carrierApplyId != null">carrier_apply_id = #{carrierApplyId},</if>
+            <if test="outWarehouseId != null">out_warehouse_id = #{outWarehouseId},</if>
+            <if test="saleOrderId != null">sale_order_id = #{saleOrderId},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteWmsDispatchBillById" parameterType="Long">
+        delete
+        from wms_dispatch_bill
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteWmsDispatchBillByIds" parameterType="String">
+        delete from wms_dispatch_bill where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <delete id="deleteWmsDispatchBillDetailByDispatchBillIds" parameterType="String">
+        delete from wms_dispatch_bill_detail where dispatch_bill_id in
+        <foreach item="dispatchBillId" collection="array" open="(" separator="," close=")">
+            #{dispatchBillId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteWmsDispatchBillDetailByDispatchBillId" parameterType="Long">
+        delete
+        from wms_dispatch_bill_detail
+        where dispatch_bill_id = #{dispatchBillId}
+    </delete>
+
+    <insert id="batchWmsDispatchBillDetail">
+        insert into wms_dispatch_bill_detail( dispatch_bill_id, plate_no, driver, contact_tel, `load`, remark) values
+        <foreach item="item" index="index" collection="list" separator=",">
+            ( #{item.dispatchBillId}, #{item.plateNo}, #{item.driver}, #{item.contactTel}, #{item.truckLoad},
+            #{item.remark})
+        </foreach>
+    </insert>
+</mapper>

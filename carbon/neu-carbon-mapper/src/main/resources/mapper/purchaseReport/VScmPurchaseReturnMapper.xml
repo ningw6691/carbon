@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neu.carbon.scm.mapper.VScmPurchaseReturnMapper">
+    
+    <resultMap type="VScmPurchaseReturn" id="VScmPurchaseReturnResult">
+        <result property="materialId"    column="material_id"    />
+        <result property="batchNo"    column="batch_no"    />
+        <result property="price"    column="price"    />
+        <result property="bookQuantity"    column="book_quantity"    />
+        <result property="arriveQuantity"    column="arrive_quantity"    />
+        <result property="returnQuantity"    column="return_quantity"    />
+        <result property="materialName"    column="material_name"    />
+        <result property="materialCode"    column="material_code"    />
+        <result property="materialModel"    column="material_model"    />
+        <result property="materialSpecification"    column="material_specification"    />
+        <result property="materialUnit"    column="material_unit"    />
+        <result property="returnDate"    column="return_date"    />
+        <result property="returnNo"    column="return_no"    />
+        <result property="supplierId"    column="supplier_id"    />
+        <result property="supplierName"    column="supplier_name"    />
+    </resultMap>
+
+    <sql id="selectVScmPurchaseReturnVo">
+        select material_id, batch_no, price, book_quantity, arrive_quantity, return_quantity, material_name, material_code, material_model, material_specification, material_unit, return_date, return_no, supplier_id, supplier_name from v_scm_purchase_return_detail
+    </sql>
+
+    <select id="selectVScmPurchaseReturnList" parameterType="VScmPurchaseReturn" resultMap="VScmPurchaseReturnResult">
+        <include refid="selectVScmPurchaseReturnVo"/>
+        <where>  
+            <if test="materialId != null "> and material_id = #{materialId}</if>
+            <if test="batchNo != null  and batchNo != ''"> and batch_no = #{batchNo}</if>
+            <if test="materialName != null  and materialName != ''"> and material_name like concat('%', #{materialName}, '%')</if>
+            <if test="params.beginReturnDate != null and params.beginReturnDate != '' and params.endReturnDate != null and params.endReturnDate != ''"> and return_date between #{params.beginReturnDate} and #{params.endReturnDate}</if>
+            <if test="returnNo != null  and returnNo != ''"> and return_no like concat('%', #{returnNo}, '%')</if>
+            <if test="supplierId != null "> and supplier_id = #{supplierId}</if>
+            <if test="supplierName != null  and supplierName != ''"> and supplier_name like concat('%', #{supplierName}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectVScmPurchaseReturnById" parameterType="Long" resultMap="VScmPurchaseReturnResult">
+        <include refid="selectVScmPurchaseReturnVo"/>
+        where material_id = #{materialId}
+    </select>
+        
+    <insert id="insertVScmPurchaseReturn" parameterType="VScmPurchaseReturn">
+        insert into v_scm_purchase_return
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="materialId != null">material_id,</if>
+            <if test="batchNo != null">batch_no,</if>
+            <if test="price != null">price,</if>
+            <if test="bookQuantity != null">book_quantity,</if>
+            <if test="arriveQuantity != null">arrive_quantity,</if>
+            <if test="returnQuantity != null">return_quantity,</if>
+            <if test="materialName != null">material_name,</if>
+            <if test="materialCode != null">material_code,</if>
+            <if test="materialModel != null">material_model,</if>
+            <if test="materialSpecification != null">material_specification,</if>
+            <if test="materialUnit != null">material_unit,</if>
+            <if test="returnDate != null">return_date,</if>
+            <if test="returnNo != null">return_no,</if>
+            <if test="supplierId != null">supplier_id,</if>
+            <if test="supplierName != null">supplier_name,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="materialId != null">#{materialId},</if>
+            <if test="batchNo != null">#{batchNo},</if>
+            <if test="price != null">#{price},</if>
+            <if test="bookQuantity != null">#{bookQuantity},</if>
+            <if test="arriveQuantity != null">#{arriveQuantity},</if>
+            <if test="returnQuantity != null">#{returnQuantity},</if>
+            <if test="materialName != null">#{materialName},</if>
+            <if test="materialCode != null">#{materialCode},</if>
+            <if test="materialModel != null">#{materialModel},</if>
+            <if test="materialSpecification != null">#{materialSpecification},</if>
+            <if test="materialUnit != null">#{materialUnit},</if>
+            <if test="returnDate != null">#{returnDate},</if>
+            <if test="returnNo != null">#{returnNo},</if>
+            <if test="supplierId != null">#{supplierId},</if>
+            <if test="supplierName != null">#{supplierName},</if>
+         </trim>
+    </insert>
+
+    <update id="updateVScmPurchaseReturn" parameterType="VScmPurchaseReturn">
+        update v_scm_purchase_return
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="batchNo != null">batch_no = #{batchNo},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="bookQuantity != null">book_quantity = #{bookQuantity},</if>
+            <if test="arriveQuantity != null">arrive_quantity = #{arriveQuantity},</if>
+            <if test="returnQuantity != null">return_quantity = #{returnQuantity},</if>
+            <if test="materialName != null">material_name = #{materialName},</if>
+            <if test="materialCode != null">material_code = #{materialCode},</if>
+            <if test="materialModel != null">material_model = #{materialModel},</if>
+            <if test="materialSpecification != null">material_specification = #{materialSpecification},</if>
+            <if test="materialUnit != null">material_unit = #{materialUnit},</if>
+            <if test="returnDate != null">return_date = #{returnDate},</if>
+            <if test="returnNo != null">return_no = #{returnNo},</if>
+            <if test="supplierId != null">supplier_id = #{supplierId},</if>
+            <if test="supplierName != null">supplier_name = #{supplierName},</if>
+        </trim>
+        where material_id = #{materialId}
+    </update>
+
+    <delete id="deleteVScmPurchaseReturnById" parameterType="Long">
+        delete from v_scm_purchase_return where material_id = #{materialId}
+    </delete>
+
+    <delete id="deleteVScmPurchaseReturnByIds" parameterType="String">
+        delete from v_scm_purchase_return where material_id in 
+        <foreach item="materialId" collection="array" open="(" separator="," close=")">
+            #{materialId}
+        </foreach>
+    </delete>
+</mapper>

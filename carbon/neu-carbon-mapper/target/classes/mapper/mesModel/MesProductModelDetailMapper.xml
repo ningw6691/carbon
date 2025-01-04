@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neu.carbon.mes.mapper.MesProductModelDetailMapper">
+    
+    <resultMap type="MesProductModelDetail" id="MesProductModelDetailResult">
+        <result property="id"    column="id"    />
+        <result property="productModelId"    column="product_model_id"    />
+        <result property="materialId"    column="material_id"    />
+        <result property="detailRemark"    column="detail_remark"    />
+    </resultMap>
+
+    <sql id="selectMesProductModelDetailVo">
+        select id, product_model_id, material_id, detail_remark from mes_product_model_detail
+    </sql>
+
+    <select id="selectMesProductModelDetailList" parameterType="MesProductModelDetail" resultMap="MesProductModelDetailResult">
+        <include refid="selectMesProductModelDetailVo"/>
+        <where>  
+            <if test="productModelId != null "> and product_model_id = #{productModelId}</if>
+            <if test="materialId != null "> and material_id = #{materialId}</if>
+            <if test="detailRemark != null  and detailRemark != ''"> and detail_remark = #{detailRemark}</if>
+        </where>
+    </select>
+    
+    <select id="selectMesProductModelDetailById" parameterType="Long" resultMap="MesProductModelDetailResult">
+        <include refid="selectMesProductModelDetailVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertMesProductModelDetail" parameterType="MesProductModelDetail" useGeneratedKeys="true" keyProperty="id">
+        insert into mes_product_model_detail
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="productModelId != null">product_model_id,</if>
+            <if test="materialId != null">material_id,</if>
+            <if test="detailRemark != null">detail_remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="productModelId != null">#{productModelId},</if>
+            <if test="materialId != null">#{materialId},</if>
+            <if test="detailRemark != null">#{detailRemark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateMesProductModelDetail" parameterType="MesProductModelDetail">
+        update mes_product_model_detail
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="productModelId != null">product_model_id = #{productModelId},</if>
+            <if test="materialId != null">material_id = #{materialId},</if>
+            <if test="detailRemark != null">detail_remark = #{detailRemark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteMesProductModelDetailById" parameterType="Long">
+        delete from mes_product_model_detail where id = #{id}
+    </delete>
+
+    <delete id="deleteMesProductModelDetailByIds" parameterType="String">
+        delete from mes_product_model_detail where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

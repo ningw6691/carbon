@@ -1,0 +1,146 @@
+package com.neu.carbon.mes.domain;
+
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+import com.neu.common.annotation.Excel;
+import com.neu.common.core.domain.BaseEntity;
+
+import io.swagger.annotations.ApiModelProperty;
+
+/**
+ * BOM单明细对象 mes_product_bom_detail
+ * 
+ * @author neuedu
+ * @date 2022-07-11
+ */
+public class MesProductBomDetail extends BaseEntity
+{
+    private static final long serialVersionUID = 1L;
+
+    /** 编号 */
+    private Long id;
+
+    /** bom单id */
+    private Long bomId;
+
+    /** 物料id */
+    @Excel(name = "物料id")
+    private Long materialId;
+    
+    /** 物料编码 */
+    @ApiModelProperty("物料编码")
+    @Excel(name = "物料编码")
+    private String materialCode;
+
+    /** 物料名称 */
+    @ApiModelProperty("物料名称")
+    @Excel(name = "物料名称")
+    private String materialName;
+
+    /** 型号 */
+    @ApiModelProperty("物料型号")
+    @Excel(name = "物料型号")
+    private String materialModel;
+
+    /** 规格 */
+    @ApiModelProperty("物料规格")
+    @Excel(name = "物料规格")
+    private String materialSpecification;
+
+    /** 单位 */
+    @ApiModelProperty("物料单位")
+    @Excel(name = "物料单位")
+    private String materialUnit;
+
+    /** 用量 */
+    @Excel(name = "用量")
+    private Double usage;
+
+    public void setId(Long id) 
+    {
+        this.id = id;
+    }
+
+    public Long getId() 
+    {
+        return id;
+    }
+    public void setBomId(Long bomId) 
+    {
+        this.bomId = bomId;
+    }
+
+    public Long getBomId() 
+    {
+        return bomId;
+    }
+    public void setMaterialId(Long materialId) 
+    {
+        this.materialId = materialId;
+    }
+
+    public Long getMaterialId() 
+    {
+        return materialId;
+    }
+    public void setUsage(Double usage) 
+    {
+        this.usage = usage;
+    }
+
+    public Double getUsage() 
+    {
+        return usage;
+    }
+
+    public String getMaterialCode() {
+		return materialCode;
+	}
+
+	public void setMaterialCode(String materialCode) {
+		this.materialCode = materialCode;
+	}
+
+	public String getMaterialName() {
+		return materialName;
+	}
+
+	public void setMaterialName(String materialName) {
+		this.materialName = materialName;
+	}
+
+	public String getMaterialModel() {
+		return materialModel;
+	}
+
+	public void setMaterialModel(String materialModel) {
+		this.materialModel = materialModel;
+	}
+
+	public String getMaterialSpecification() {
+		return materialSpecification;
+	}
+
+	public void setMaterialSpecification(String materialSpecification) {
+		this.materialSpecification = materialSpecification;
+	}
+
+	public String getMaterialUnit() {
+		return materialUnit;
+	}
+
+	public void setMaterialUnit(String materialUnit) {
+		this.materialUnit = materialUnit;
+	}
+
+	@Override
+    public String toString() {
+        return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
+            .append("id", getId())
+            .append("bomId", getBomId())
+            .append("materialId", getMaterialId())
+            .append("usage", getUsage())
+            .append("remark", getRemark())
+            .toString();
+    }
+}

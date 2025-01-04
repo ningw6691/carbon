@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neu.carbon.wms.mapper.WmsCarrierApplyDetailMapper">
+    
+    <resultMap type="WmsCarrierApplyDetail" id="WmsCarrierApplyDetailResult">
+        <result property="id"    column="id"    />
+        <result property="carrierApplyId"    column="carrier_apply_id"    />
+        <result property="materialId"    column="material_id"    />
+        <result property="batchNo"    column="batch_no"    />
+        <result property="warehouseId"    column="warehouse_id"    />
+        <result property="whRegionId"    column="wh_region_id"    />
+        <result property="whLocationId"    column="wh_location_id"    />
+        <result property="deliveryQuantity"    column="delivery_quantity"    />
+    </resultMap>
+
+    <sql id="selectWmsCarrierApplyDetailVo">
+        select id, carrier_apply_id, material_id, batch_no, warehouse_id, wh_region_id, wh_location_id, delivery_quantity from wms_carrier_apply_detail
+    </sql>
+
+    <select id="selectWmsCarrierApplyDetailList" parameterType="WmsCarrierApplyDetail" resultMap="WmsCarrierApplyDetailResult">
+        <include refid="selectWmsCarrierApplyDetailVo"/>
+        <where>  
+            <if test="carrierApplyId != null "> and carrier_apply_id = #{carrierApplyId}</if>
+            <if test="materialId != null "> and material_id = #{materialId}</if>
+            <if test="batchNo != null  and batchNo != ''"> and batch_no like concat('%', #{batchNo}, '%')</if>
+            <if test="warehouseId != null "> and warehouse_id = #{warehouseId}</if>
+            <if test="whRegionId != null "> and wh_region_id = #{whRegionId}</if>
+            <if test="whLocationId != null "> and wh_location_id = #{whLocationId}</if>
+            <if test="deliveryQuantity != null "> and delivery_quantity = #{deliveryQuantity}</if>
+        </where>
+    </select>
+    
+    <select id="selectWmsCarrierApplyDetailById" parameterType="Long" resultMap="WmsCarrierApplyDetailResult">
+        <include refid="selectWmsCarrierApplyDetailVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertWmsCarrierApplyDetail" parameterType="WmsCarrierApplyDetail" useGeneratedKeys="true" keyProperty="id">
+        insert into wms_carrier_apply_detail
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="carrierApplyId != null">carrier_apply_id,</if>
+            <if test="materialId != null">material_id,</if>
+            <if test="batchNo != null">batch_no,</if>
+            <if test="warehouseId != null">warehouse_id,</if>
+            <if test="whRegionId != null">wh_region_id,</if>
+            <if test="whLocationId != null">wh_location_id,</if>
+            <if test="deliveryQuantity != null">delivery_quantity,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="carrierApplyId != null">#{carrierApplyId},</if>
+            <if test="materialId != null">#{materialId},</if>
+            <if test="batchNo != null">#{batchNo},</if>
+            <if test="warehouseId != null">#{warehouseId},</if>
+            <if test="whRegionId != null">#{whRegionId},</if>
+            <if test="whLocationId != null">#{whLocationId},</if>
+            <if test="deliveryQuantity != null">#{deliveryQuantity},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWmsCarrierApplyDetail" parameterType="WmsCarrierApplyDetail">
+        update wms_carrier_apply_detail
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="carrierApplyId != null">carrier_apply_id = #{carrierApplyId},</if>
+            <if test="materialId != null">material_id = #{materialId},</if>
+            <if test="batchNo != null">batch_no = #{batchNo},</if>
+            <if test="warehouseId != null">warehouse_id = #{warehouseId},</if>
+            <if test="whRegionId != null">wh_region_id = #{whRegionId},</if>
+            <if test="whLocationId != null">wh_location_id = #{whLocationId},</if>
+            <if test="deliveryQuantity != null">delivery_quantity = #{deliveryQuantity},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteWmsCarrierApplyDetailById" parameterType="Long">
+        delete from wms_carrier_apply_detail where id = #{id}
+    </delete>
+
+    <delete id="deleteWmsCarrierApplyDetailByIds" parameterType="String">
+        delete from wms_carrier_apply_detail where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neu.carbon.wms.mapper.WmsPurchaseOwnerMapper">
+    
+    <resultMap type="WmsPurchaseOwner" id="WmsPurchaseOwnerResult">
+        <result property="id"    column="id"    />
+        <result property="ownerNo"    column="owner_no"    />
+        <result property="name"    column="name"    />
+        <result property="shortName"    column="short_name"    />
+        <result property="addr"    column="addr"    />
+        <result property="tel"    column="tel"    />
+        <result property="bank"    column="bank"    />
+        <result property="account"    column="account"    />
+        <result property="taxNo"    column="tax_no"    />
+        <result property="contact"    column="contact"    />
+        <result property="contactTel"    column="contact_tel"    />
+        <result property="type"    column="type"    />
+        <result property="level"    column="level"    />
+        <result property="status"    column="status"    />
+        <result property="applyUser"    column="apply_user"    />
+        <result property="applyTime"    column="apply_time"    />
+        <result property="applyStatus"    column="apply_status"    />
+        <result property="auditUser"    column="audit_user"    />
+        <result property="auditTime"    column="audit_time"    />
+        <result property="auditStatus"    column="audit_status"    />
+        <result property="auditComment"    column="audit_comment"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectWmsPurchaseOwnerVo">
+        select id, owner_no, name, short_name, addr, tel, bank, account, tax_no, contact, contact_tel, type, level, status, apply_user, apply_time, apply_status, audit_user, audit_time, audit_status, audit_comment, remark from wms_purchase_owner
+    </sql>
+
+    <select id="selectWmsPurchaseOwnerList" parameterType="WmsPurchaseOwner" resultMap="WmsPurchaseOwnerResult">
+        <include refid="selectWmsPurchaseOwnerVo"/>
+        <where>  
+            <if test="ownerNo != null  and ownerNo != ''"> and owner_no = #{ownerNo}</if>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="shortName != null  and shortName != ''"> and short_name like concat('%', #{shortName}, '%')</if>
+            <if test="addr != null  and addr != ''"> and addr = #{addr}</if>
+            <if test="tel != null  and tel != ''"> and tel = #{tel}</if>
+            <if test="bank != null  and bank != ''"> and bank = #{bank}</if>
+            <if test="account != null  and account != ''"> and account = #{account}</if>
+            <if test="taxNo != null  and taxNo != ''"> and tax_no = #{taxNo}</if>
+            <if test="contact != null  and contact != ''"> and contact = #{contact}</if>
+            <if test="contactTel != null  and contactTel != ''"> and contact_tel = #{contactTel}</if>
+            <if test="type != null  and type != ''"> and type = #{type}</if>
+            <if test="level != null  and level != ''"> and level = #{level}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="applyUser != null  and applyUser != ''"> and apply_user = #{applyUser}</if>
+            <if test="applyTime != null "> and apply_time = #{applyTime}</if>
+            <if test="applyStatus != null  and applyStatus != ''"> and apply_status = #{applyStatus}</if>
+            <if test="auditUser != null  and auditUser != ''"> and audit_user = #{auditUser}</if>
+            <if test="auditTime != null "> and audit_time = #{auditTime}</if>
+            <if test="auditStatus != null  and auditStatus != ''"> and audit_status = #{auditStatus}</if>
+            <if test="auditComment != null  and auditComment != ''"> and audit_comment = #{auditComment}</if>
+        </where>
+    </select>
+    
+    <select id="selectWmsPurchaseOwnerById" parameterType="Long" resultMap="WmsPurchaseOwnerResult">
+        <include refid="selectWmsPurchaseOwnerVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertWmsPurchaseOwner" parameterType="WmsPurchaseOwner" useGeneratedKeys="true" keyProperty="id">
+        insert into wms_purchase_owner
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="ownerNo != null">owner_no,</if>
+            <if test="name != null">name,</if>
+            <if test="shortName != null">short_name,</if>
+            <if test="addr != null">addr,</if>
+            <if test="tel != null">tel,</if>
+            <if test="bank != null">bank,</if>
+            <if test="account != null">account,</if>
+            <if test="taxNo != null">tax_no,</if>
+            <if test="contact != null">contact,</if>
+            <if test="contactTel != null">contact_tel,</if>
+            <if test="type != null">type,</if>
+            <if test="level != null">level,</if>
+            <if test="status != null">status,</if>
+            <if test="applyUser != null">apply_user,</if>
+            <if test="applyTime != null">apply_time,</if>
+            <if test="applyStatus != null">apply_status,</if>
+            <if test="auditUser != null">audit_user,</if>
+            <if test="auditTime != null">audit_time,</if>
+            <if test="auditStatus != null">audit_status,</if>
+            <if test="auditComment != null">audit_comment,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="ownerNo != null">#{ownerNo},</if>
+            <if test="name != null">#{name},</if>
+            <if test="shortName != null">#{shortName},</if>
+            <if test="addr != null">#{addr},</if>
+            <if test="tel != null">#{tel},</if>
+            <if test="bank != null">#{bank},</if>
+            <if test="account != null">#{account},</if>
+            <if test="taxNo != null">#{taxNo},</if>
+            <if test="contact != null">#{contact},</if>
+            <if test="contactTel != null">#{contactTel},</if>
+            <if test="type != null">#{type},</if>
+            <if test="level != null">#{level},</if>
+            <if test="status != null">#{status},</if>
+            <if test="applyUser != null">#{applyUser},</if>
+            <if test="applyTime != null">#{applyTime},</if>
+            <if test="applyStatus != null">#{applyStatus},</if>
+            <if test="auditUser != null">#{auditUser},</if>
+            <if test="auditTime != null">#{auditTime},</if>
+            <if test="auditStatus != null">#{auditStatus},</if>
+            <if test="auditComment != null">#{auditComment},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWmsPurchaseOwner" parameterType="WmsPurchaseOwner">
+        update wms_purchase_owner
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="ownerNo != null">owner_no = #{ownerNo},</if>
+            <if test="name != null">name = #{name},</if>
+            <if test="shortName != null">short_name = #{shortName},</if>
+            <if test="addr != null">addr = #{addr},</if>
+            <if test="tel != null">tel = #{tel},</if>
+            <if test="bank != null">bank = #{bank},</if>
+            <if test="account != null">account = #{account},</if>
+            <if test="taxNo != null">tax_no = #{taxNo},</if>
+            <if test="contact != null">contact = #{contact},</if>
+            <if test="contactTel != null">contact_tel = #{contactTel},</if>
+            <if test="type != null">type = #{type},</if>
+            <if test="level != null">level = #{level},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="applyUser != null">apply_user = #{applyUser},</if>
+            <if test="applyTime != null">apply_time = #{applyTime},</if>
+            <if test="applyStatus != null">apply_status = #{applyStatus},</if>
+            <if test="auditUser != null">audit_user = #{auditUser},</if>
+            <if test="auditTime != null">audit_time = #{auditTime},</if>
+            <if test="auditStatus != null">audit_status = #{auditStatus},</if>
+            <if test="auditComment != null">audit_comment = #{auditComment},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteWmsPurchaseOwnerById" parameterType="Long">
+        delete from wms_purchase_owner where id = #{id}
+    </delete>
+
+    <delete id="deleteWmsPurchaseOwnerByIds" parameterType="String">
+        delete from wms_purchase_owner where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

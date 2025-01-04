@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neu.carbon.scm.mapper.ScmSalePlanMapper">
+
+    <resultMap type="ScmSalePlan" id="ScmSalePlanResult">
+        <result property="id"    column="id"    />
+        <result property="planNo"    column="plan_no"    />
+        <result property="title"    column="title"    />
+        <result property="type"    column="type"    />
+        <result property="startDate"    column="start_date"    />
+        <result property="endDate"    column="end_date"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <resultMap id="ScmSalePlanScmSalePlanDetailResult" type="ScmSalePlan" extends="ScmSalePlanResult">
+        <collection property="scmSalePlanDetailList" notNullColumn="id" javaType="java.util.List" resultMap="ScmSalePlanDetailResult" />
+    </resultMap>
+
+    <resultMap type="ScmSalePlanDetail" id="ScmSalePlanDetailResult">
+        <result property="id"    column="id"    />
+        <result property="planId"    column="plan_id"    />
+        <result property="materialId"    column="material_id"    />
+        <result property="saleAmount"    column="sale_amount"    />
+        <result property="detailRemark"    column="detail_remark"    />
+    </resultMap>
+
+    <sql id="selectScmSalePlanVo">
+        select id, plan_no, title, type, start_date, end_date, create_by, create_time, remark from scm_sale_plan
+    </sql>
+
+    <select id="selectScmSalePlanList" parameterType="ScmSalePlan" resultMap="ScmSalePlanResult">
+        <include refid="selectScmSalePlanVo"/>
+        <where>
+            <if test="planNo != null  and planNo != ''"> and plan_no like concat('%', #{planNo}, '%')</if>
+            <if test="title != null  and title != ''"> and title like concat('%', #{title}, '%')</if>
+            <if test="type != null  and type != ''"> and type = #{type}</if>
+            <if test="startDate != null "> and start_date = #{startDate}</if>
+            <if test="endDate != null "> and end_date = #{endDate}</if>
+            <if test="createBy != null  and createBy != ''"> and create_by = #{createBy}</if>
+            <if test="params.beginCreateTime != null and params.beginCreateTime != '' and params.endCreateTime != null and params.endCreateTime != ''"> and create_time between #{params.beginCreateTime} and #{params.endCreateTime}</if>
+        </where>
+    </select>
+
+    <select id="selectScmSalePlanById" parameterType="Long" resultMap="ScmSalePlanScmSalePlanDetailResult">
+        select a.id, a.plan_no, a.title, a.type, a.start_date, a.end_date, a.create_by, a.create_time, a.remark,
+               b.id, b.plan_id, b.material_id, b.sale_amount, b.detail_remark
+        from scm_sale_plan a
+                 left join scm_sale_plan_detail b on b.plan_id = a.id
+        where a.id = #{id}
+    </select>
+
+    <insert id="insertScmSalePlan" parameterType="ScmSalePlan" useGeneratedKeys="true" keyProperty="id">
+        insert into scm_sale_plan
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="planNo != null">plan_no,</if>
+            <if test="title != null and title != ''">title,</if>
+            <if test="type != null and type != ''">type,</if>
+            <if test="startDate != null">start_date,</if>
+            <if test="endDate != null">end_date,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="remark != null">remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="planNo != null">#{planNo},</if>
+            <if test="title != null and title != ''">#{title},</if>
+            <if test="type != null and type != ''">#{type},</if>
+            <if test="startDate != null">#{startDate},</if>
+            <if test="endDate != null">#{endDate},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="remark != null">#{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateScmSalePlan" parameterType="ScmSalePlan">
+        update scm_sale_plan
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="planNo != null">plan_no = #{planNo},</if>
+            <if test="title != null and title != ''">title = #{title},</if>
+            <if test="type != null and type != ''">type = #{type},</if>
+            <if test="startDate != null">start_date = #{startDate},</if>
+            <if test="endDate != null">end_date = #{endDate},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteScmSalePlanById" parameterType="Long">
+        delete from scm_sale_plan where id = #{id}
+    </delete>
+
+    <delete id="deleteScmSalePlanByIds" parameterType="String">
+        delete from scm_sale_plan where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <delete id="deleteScmSalePlanDetailByPlanIds" parameterType="String">
+        delete from scm_sale_plan_detail where plan_id in
+        <foreach item="planId" collection="array" open="(" separator="," close=")">
+            #{planId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteScmSalePlanDetailByPlanId" parameterType="Long">
+        delete from scm_sale_plan_detail where plan_id = #{planId}
+    </delete>
+
+    <insert id="batchScmSalePlanDetail">
+        insert into scm_sale_plan_detail(  plan_id, material_id, sale_amount, detail_remark) values
+        <foreach item="item" index="index" collection="list" separator=",">
+            (  #{item.planId}, #{item.materialId}, #{item.saleAmount}, #{item.detailRemark})
+        </foreach>
+    </insert>
+</mapper>

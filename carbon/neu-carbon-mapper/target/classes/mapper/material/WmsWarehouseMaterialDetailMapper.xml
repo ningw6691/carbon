@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neu.carbon.wms.mapper.WmsWarehouseMaterialDetailMapper">
+    
+    <resultMap type="WmsWarehouseMaterialDetail" id="WmsWarehouseMaterialDetailResult">
+        <result property="id"    column="id"    />
+        <result property="whId"    column="wh_id"    />
+        <result property="whRegionId"    column="wh_region_id"    />
+        <result property="whLocationId"    column="wh_location_id"    />
+        <result property="whMaterialId"    column="wh_material_id"    />
+        <result property="serialNo"    column="serial_no"    />
+        <result property="productDate"    column="product_date"    />
+        <result property="manufacturer"    column="manufacturer"    />
+        <result property="batchNo"    column="batch_no"    />
+        <result property="inventory"    column="inventory"    />
+        <result property="lockInventory"    column="lock_inventory"    />
+        <result property="remark"    column="remark"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="materialId"    column="material_id"    />
+        <result property="materialCode"    column="material_code"    />
+        <result property="materialName"    column="material_name"    />
+        <result property="materialModel"    column="material_model"    />
+        <result property="materialSpecification"    column="material_specification"    />
+        <result property="materialUnit"    column="material_unit"    />
+        <result property="warehouseId"    column="warehouse_id"    />
+    </resultMap>
+
+    <sql id="selectWmsWarehouseMaterialDetailVo">
+        SELECT
+		  wmd.id,
+		  wmd.wh_id,
+		  wmd.wh_region_id,
+		  wmd.wh_location_id,
+		  wmd.wh_material_id,
+		  wmd.serial_no,
+		  wmd.product_date,
+		  wmd.manufacturer,
+		  wmd.batch_no,
+		  wmd.inventory,
+		  wmd.lock_inventory,
+		  wmd.remark,
+		  wmd.create_time,
+		  wmd.update_time,
+		  wmd.create_by,
+		  wmd.update_by,
+		  wm.material_id,
+		  m.`code` material_code,
+		  m.`name` material_name,
+		  m.`model` material_model,
+		  m.`specification` material_specification,
+		  m.`unit` material_unit,
+		  wm.`warehouse_id`
+		FROM
+		  wms_warehouse_material_detail wmd
+		LEFT JOIN wms_warehouse_material wm ON wm.id = wmd.`wh_material_id`
+		LEFT JOIN wms_material_info m ON wm.material_id = m.id
+    </sql>
+
+    <select id="selectWmsWarehouseMaterialDetailList" parameterType="WmsWarehouseMaterialDetail" resultMap="WmsWarehouseMaterialDetailResult">
+        <include refid="selectWmsWarehouseMaterialDetailVo"/>
+        <where>  
+            <if test="whId != null "> and wmd.wh_id = #{whId}</if>
+            <if test="whRegionId != null "> and wmd.wh_region_id = #{whRegionId}</if>
+            <if test="whLocationId != null "> and wmd.wh_location_id = #{whLocationId}</if>
+            <if test="whMaterialId != null "> and wmd.wh_material_id = #{whMaterialId}</if>
+            <if test="serialNo != null  and serialNo != ''"> and wmd.serial_no = #{serialNo}</if>
+            <if test="productDate != null "> and wmd.product_date = #{productDate}</if>
+            <if test="manufacturer != null  and manufacturer != ''"> and wmd.manufacturer like concat('%', #{manufacturer}, '%')</if>
+            <if test="batchNo != null  and batchNo != ''"> and wmd.batch_no = #{batchNo}</if>
+        	<if test="warehouseId != null "> and wm.warehouse_id = #{warehouseId}</if>
+            <if test="materialId != null "> and wm.material_id = #{materialId}</if>
+            <if test="materialCode != null  and materialCode != ''"> and m.code = #{materialCode}</if>
+            <if test="materialName != null  and materialName != ''"> and m.name like concat('%', #{materialName}, '%')</if>
+        	<if test="materialModel != null  and materialModel != ''"> and m.model = #{materialModel}</if>
+        	<if test="materialSpecification != null  and materialSpecification != ''"> and m.specification = #{materialSpecification}</if>
+        </where>
+    </select>
+    
+    <select id="selectWmsWarehouseMaterialDetailById" parameterType="Long" resultMap="WmsWarehouseMaterialDetailResult">
+        <include refid="selectWmsWarehouseMaterialDetailVo"/>
+        where wmd.id = #{id}
+    </select>
+        
+    <insert id="insertWmsWarehouseMaterialDetail" parameterType="WmsWarehouseMaterialDetail" useGeneratedKeys="true" keyProperty="id">
+        insert into wms_warehouse_material_detail
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="whId != null">wh_id,</if>
+            <if test="whRegionId != null">wh_region_id,</if>
+            <if test="whLocationId != null">wh_location_id,</if>
+            <if test="whMaterialId != null">wh_material_id,</if>
+            <if test="serialNo != null">serial_no,</if>
+            <if test="productDate != null">product_date,</if>
+            <if test="manufacturer != null">manufacturer,</if>
+            <if test="batchNo != null">batch_no,</if>
+            <if test="inventory != null">inventory,</if>
+            <if test="lockInventory != null">lock_inventory,</if>
+            <if test="remark != null">remark,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateBy != null">update_by,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="whId != null">#{whId},</if>
+            <if test="whRegionId != null">#{whRegionId},</if>
+            <if test="whLocationId != null">#{whLocationId},</if>
+            <if test="whMaterialId != null">#{whMaterialId},</if>
+            <if test="serialNo != null">#{serialNo},</if>
+            <if test="productDate != null">#{productDate},</if>
+            <if test="manufacturer != null">#{manufacturer},</if>
+            <if test="batchNo != null">#{batchNo},</if>
+            <if test="inventory != null">#{inventory},</if>
+            <if test="lockInventory != null">#{lockInventory},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWmsWarehouseMaterialDetail" parameterType="WmsWarehouseMaterialDetail">
+        update wms_warehouse_material_detail
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="whId != null">wh_id = #{whId},</if>
+            <if test="whRegionId != null">wh_region_id = #{whRegionId},</if>
+            <if test="whLocationId != null">wh_location_id = #{whLocationId},</if>
+            <if test="whMaterialId != null">wh_material_id = #{whMaterialId},</if>
+            <if test="serialNo != null">serial_no = #{serialNo},</if>
+            <if test="productDate != null">product_date = #{productDate},</if>
+            <if test="manufacturer != null">manufacturer = #{manufacturer},</if>
+            <if test="batchNo != null">batch_no = #{batchNo},</if>
+            <if test="inventory != null">inventory = #{inventory},</if>
+            <if test="lockInventory != null">lock_inventory = #{lockInventory},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteWmsWarehouseMaterialDetailById" parameterType="Long">
+        delete from wms_warehouse_material_detail where id = #{id}
+    </delete>
+
+    <delete id="deleteWmsWarehouseMaterialDetailByIds" parameterType="String">
+        delete from wms_warehouse_material_detail where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

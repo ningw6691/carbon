@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neu.carbon.mes.mapper.MesProductJobMapper">
+    
+    <resultMap type="MesProductJob" id="MesProductJobResult">
+        <result property="id"    column="id"    />
+        <result property="name"    column="name"    />
+        <result property="planId"    column="plan_id"    />
+        <result property="scheduleId"    column="schedule_id"    />
+        <result property="productId"    column="product_id"    />
+        <result property="startTime"    column="start_time"    />
+        <result property="endTime"    column="end_time"    />
+        <result property="productQuantity"    column="product_quantity"    />
+        <result property="status"    column="status"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <resultMap id="MesProductJobMesProductJobMaterialResult" type="MesProductJob" extends="MesProductJobResult">
+        <collection property="mesProductJobMaterialList" notNullColumn="id" javaType="java.util.List" resultMap="MesProductJobMaterialResult" />
+    </resultMap>
+
+    <resultMap type="MesProductJobMaterial" id="MesProductJobMaterialResult">
+        <result property="id"    column="id"    />
+        <result property="jobId"    column="job_id"    />
+        <result property="materialId"    column="material_id"    />
+        <result property="usageQuantity"    column="usage_quantity"    />
+        <result property="detailRemark"    column="detail_remark"    />
+    </resultMap>
+
+    <sql id="selectMesProductJobVo">
+        select id, name, plan_id, schedule_id, product_id, start_time, end_time, product_quantity, status, remark from mes_product_job
+    </sql>
+
+    <select id="selectMesProductJobList" parameterType="MesProductJob" resultMap="MesProductJobResult">
+        <include refid="selectMesProductJobVo"/>
+        <where>  
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="planId != null "> and plan_id = #{planId}</if>
+            <if test="scheduleId != null "> and schedule_id = #{scheduleId}</if>
+            <if test="productId != null "> and product_id like concat('%', #{productId}, '%')</if>
+            <if test="params.beginStartTime != null and params.beginStartTime != '' and params.endStartTime != null and params.endStartTime != ''"> and start_time between #{params.beginStartTime} and #{params.endStartTime}</if>
+            <if test="params.beginEndTime != null and params.beginEndTime != '' and params.endEndTime != null and params.endEndTime != ''"> and end_time between #{params.beginEndTime} and #{params.endEndTime}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+        </where>
+    </select>
+    
+    <select id="selectMesProductJobById" parameterType="Long" resultMap="MesProductJobMesProductJobMaterialResult">
+        select a.id, a.name, a.plan_id, a.schedule_id, a.product_id, a.start_time, a.end_time, a.product_quantity, a.status, a.remark,
+            b.id, b.job_id, b.material_id, b.usage_quantity, b.detail_remark
+        from mes_product_job a
+        left join mes_product_job_material b on b.job_id = a.id
+        where a.id = #{id}
+    </select>
+        
+    <insert id="insertMesProductJob" parameterType="MesProductJob" useGeneratedKeys="true" keyProperty="id">
+        insert into mes_product_job
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">name,</if>
+            <if test="planId != null">plan_id,</if>
+            <if test="scheduleId != null">schedule_id,</if>
+            <if test="productId != null">product_id,</if>
+            <if test="startTime != null">start_time,</if>
+            <if test="endTime != null">end_time,</if>
+            <if test="productQuantity != null">product_quantity,</if>
+            <if test="status != null">status,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="planId != null">#{planId},</if>
+            <if test="scheduleId != null">#{scheduleId},</if>
+            <if test="productId != null">#{productId},</if>
+            <if test="startTime != null">#{startTime},</if>
+            <if test="endTime != null">#{endTime},</if>
+            <if test="productQuantity != null">#{productQuantity},</if>
+            <if test="status != null">#{status},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateMesProductJob" parameterType="MesProductJob">
+        update mes_product_job
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="planId != null">plan_id = #{planId},</if>
+            <if test="scheduleId != null">schedule_id = #{scheduleId},</if>
+            <if test="productId != null">product_id = #{productId},</if>
+            <if test="startTime != null">start_time = #{startTime},</if>
+            <if test="endTime != null">end_time = #{endTime},</if>
+            <if test="productQuantity != null">product_quantity = #{productQuantity},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteMesProductJobById" parameterType="Long">
+        delete from mes_product_job where id = #{id}
+    </delete>
+
+    <delete id="deleteMesProductJobByIds" parameterType="String">
+        delete from mes_product_job where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+    <delete id="deleteMesProductJobMaterialByJobIds" parameterType="String">
+        delete from mes_product_job_material where job_id in 
+        <foreach item="jobId" collection="array" open="(" separator="," close=")">
+            #{jobId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteMesProductJobMaterialByJobId" parameterType="Long">
+        delete from mes_product_job_material where job_id = #{jobId}
+    </delete>
+
+    <insert id="batchMesProductJobMaterial">
+        insert into mes_product_job_material(  job_id, material_id, usage_quantity, detail_remark) values
+        <foreach item="item" index="index" collection="list" separator=",">
+            (  #{item.jobId}, #{item.materialId}, #{item.usageQuantity}, #{item.detailRemark})
+        </foreach>
+    </insert>
+</mapper>

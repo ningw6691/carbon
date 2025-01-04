@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neu.carbon.scm.mapper.VScmSaleDeliveryDetailMapper">
+    
+    <resultMap type="VScmSaleDeliveryDetail" id="VScmSaleDeliveryDetailResult">
+        <result property="contractNo"    column="contract_no"    />
+        <result property="deliveryId"    column="delivery_id"    />
+        <result property="customerId"    column="customer_id"    />
+        <result property="customerName"    column="customer_name"    />
+        <result property="materialId"    column="material_id"    />
+        <result property="materialName"    column="material_name"    />
+        <result property="materialCode"    column="material_code"    />
+        <result property="materialModel"    column="material_model"    />
+        <result property="materialSpecification"    column="material_specification"    />
+        <result property="materialUnit"    column="material_unit"    />
+        <result property="quantity"    column="quantity"    />
+        <result property="returnQuantity"    column="return_quantity"    />
+    </resultMap>
+
+    <sql id="selectVScmSaleDeliveryDetailVo">
+        select contract_no, delivery_id, customer_id, customer_name, material_id, material_name, material_code, material_model, material_specification, material_unit, quantity, return_quantity from v_scm_sale_delivery_detail
+    </sql>
+
+    <select id="selectVScmSaleDeliveryDetailList" parameterType="VScmSaleDeliveryDetail" resultMap="VScmSaleDeliveryDetailResult">
+        <include refid="selectVScmSaleDeliveryDetailVo"/>
+        <where>  
+            <if test="contractNo != null  and contractNo != ''"> and contract_no like concat('%', #{contractNo}, '%')</if>
+            <if test="customerId != null "> and customer_id = #{customerId}</if>
+            <if test="customerName != null  and customerName != ''"> and customer_name like concat('%', #{customerName}, '%')</if>
+            <if test="materialId != null "> and material_id = #{materialId}</if>
+            <if test="materialName != null  and materialName != ''"> and material_name like concat('%', #{materialName}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectVScmSaleDeliveryDetailById" parameterType="String" resultMap="VScmSaleDeliveryDetailResult">
+        <include refid="selectVScmSaleDeliveryDetailVo"/>
+        where contract_no = #{contractNo}
+    </select>
+        
+    <insert id="insertVScmSaleDeliveryDetail" parameterType="VScmSaleDeliveryDetail">
+        insert into v_scm_sale_delivery_detail
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="contractNo != null">contract_no,</if>
+            <if test="deliveryId != null">delivery_id,</if>
+            <if test="customerId != null">customer_id,</if>
+            <if test="customerName != null">customer_name,</if>
+            <if test="materialId != null">material_id,</if>
+            <if test="materialName != null">material_name,</if>
+            <if test="materialCode != null">material_code,</if>
+            <if test="materialModel != null">material_model,</if>
+            <if test="materialSpecification != null">material_specification,</if>
+            <if test="materialUnit != null">material_unit,</if>
+            <if test="quantity != null">quantity,</if>
+            <if test="returnQuantity != null">return_quantity,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="contractNo != null">#{contractNo},</if>
+            <if test="deliveryId != null">#{deliveryId},</if>
+            <if test="customerId != null">#{customerId},</if>
+            <if test="customerName != null">#{customerName},</if>
+            <if test="materialId != null">#{materialId},</if>
+            <if test="materialName != null">#{materialName},</if>
+            <if test="materialCode != null">#{materialCode},</if>
+            <if test="materialModel != null">#{materialModel},</if>
+            <if test="materialSpecification != null">#{materialSpecification},</if>
+            <if test="materialUnit != null">#{materialUnit},</if>
+            <if test="quantity != null">#{quantity},</if>
+            <if test="returnQuantity != null">#{returnQuantity},</if>
+         </trim>
+    </insert>
+
+    <update id="updateVScmSaleDeliveryDetail" parameterType="VScmSaleDeliveryDetail">
+        update v_scm_sale_delivery_detail
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="deliveryId != null">delivery_id = #{deliveryId},</if>
+            <if test="customerId != null">customer_id = #{customerId},</if>
+            <if test="customerName != null">customer_name = #{customerName},</if>
+            <if test="materialId != null">material_id = #{materialId},</if>
+            <if test="materialName != null">material_name = #{materialName},</if>
+            <if test="materialCode != null">material_code = #{materialCode},</if>
+            <if test="materialModel != null">material_model = #{materialModel},</if>
+            <if test="materialSpecification != null">material_specification = #{materialSpecification},</if>
+            <if test="materialUnit != null">material_unit = #{materialUnit},</if>
+            <if test="quantity != null">quantity = #{quantity},</if>
+            <if test="returnQuantity != null">return_quantity = #{returnQuantity},</if>
+        </trim>
+        where contract_no = #{contractNo}
+    </update>
+
+    <delete id="deleteVScmSaleDeliveryDetailById" parameterType="String">
+        delete from v_scm_sale_delivery_detail where contract_no = #{contractNo}
+    </delete>
+
+    <delete id="deleteVScmSaleDeliveryDetailByIds" parameterType="String">
+        delete from v_scm_sale_delivery_detail where contract_no in 
+        <foreach item="contractNo" collection="array" open="(" separator="," close=")">
+            #{contractNo}
+        </foreach>
+    </delete>
+</mapper>

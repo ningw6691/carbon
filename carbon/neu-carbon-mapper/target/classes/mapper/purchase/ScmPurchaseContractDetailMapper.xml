@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neu.carbon.scm.mapper.ScmPurchaseContractDetailMapper">
+    
+    <resultMap type="ScmPurchaseContractDetail" id="ScmPurchaseContractDetailResult">
+        <result property="id"    column="id"    />
+        <result property="contractId"    column="contract_id"    />
+        <result property="materialId"    column="material_id"    />
+        <result property="price"    column="price"    />
+        <result property="quantity"    column="quantity"    />
+        <result property="amount"    column="amount"    />
+        <result property="requireDate"    column="require_date"    />
+        <result property="detailRemark"    column="detail_remark"    />
+    </resultMap>
+
+    <sql id="selectScmPurchaseContractDetailVo">
+        select id, contract_id, material_id, price, quantity, amount, require_date, detail_remark from scm_purchase_contract_detail
+    </sql>
+
+    <select id="selectScmPurchaseContractDetailList" parameterType="ScmPurchaseContractDetail" resultMap="ScmPurchaseContractDetailResult">
+        <include refid="selectScmPurchaseContractDetailVo"/>
+        <where>  
+            <if test="contractId != null  and contractId != ''"> and contract_id = #{contractId}</if>
+            <if test="materialId != null "> and material_id = #{materialId}</if>
+        </where>
+    </select>
+    
+    <select id="selectScmPurchaseContractDetailById" parameterType="Long" resultMap="ScmPurchaseContractDetailResult">
+        <include refid="selectScmPurchaseContractDetailVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertScmPurchaseContractDetail" parameterType="ScmPurchaseContractDetail" useGeneratedKeys="true" keyProperty="id">
+        insert into scm_purchase_contract_detail
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="contractId != null">contract_id,</if>
+            <if test="materialId != null">material_id,</if>
+            <if test="price != null">price,</if>
+            <if test="quantity != null">quantity,</if>
+            <if test="amount != null">amount,</if>
+            <if test="requireDate != null">require_date,</if>
+            <if test="detailRemark != null">detail_remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="contractId != null">#{contractId},</if>
+            <if test="materialId != null">#{materialId},</if>
+            <if test="price != null">#{price},</if>
+            <if test="quantity != null">#{quantity},</if>
+            <if test="amount != null">#{amount},</if>
+            <if test="requireDate != null">#{requireDate},</if>
+            <if test="detailRemark != null">#{detailRemark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateScmPurchaseContractDetail" parameterType="ScmPurchaseContractDetail">
+        update scm_purchase_contract_detail
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="contractId != null">contract_id = #{contractId},</if>
+            <if test="materialId != null">material_id = #{materialId},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="quantity != null">quantity = #{quantity},</if>
+            <if test="amount != null">amount = #{amount},</if>
+            <if test="requireDate != null">require_date = #{requireDate},</if>
+            <if test="detailRemark != null">detail_remark = #{detailRemark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteScmPurchaseContractDetailById" parameterType="Long">
+        delete from scm_purchase_contract_detail where id = #{id}
+    </delete>
+
+    <delete id="deleteScmPurchaseContractDetailByIds" parameterType="String">
+        delete from scm_purchase_contract_detail where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

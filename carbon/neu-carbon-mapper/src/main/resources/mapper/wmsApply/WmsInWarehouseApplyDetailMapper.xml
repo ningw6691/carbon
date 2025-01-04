@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neu.carbon.wms.mapper.WmsInWarehouseApplyDetailMapper">
+    
+    <resultMap type="WmsInWarehouseApplyDetail" id="WmsInWarehouseApplyDetailResult">
+        <result property="id"    column="id"    />
+        <result property="applyId"    column="apply_id"    />
+        <result property="materialId"    column="material_id"    />
+        <result property="warehouseId"    column="warehouse_id"    />
+        <result property="whLocationId"    column="wh_location_id"    />
+        <result property="whRegionId"    column="wh_region_id"    />
+        <result property="totalQuantity"    column="total_quantity"    />
+        <result property="inQuantity"    column="in_quantity"    />
+        <result property="serialNo"    column="serial_no"    />
+        <result property="batchNo"    column="batch_no"    />
+        <result property="productDate"    column="product_date"    />
+        <result property="manufacturer"    column="manufacturer"    />
+    </resultMap>
+
+    <sql id="selectWmsInWarehouseApplyDetailVo">
+        select id, apply_id, material_id, warehouse_id, wh_location_id, wh_region_id, total_quantity, in_quantity, serial_no, batch_no, product_date, manufacturer from wms_in_warehouse_apply_detail
+    </sql>
+
+    <select id="selectWmsInWarehouseApplyDetailList" parameterType="WmsInWarehouseApplyDetail" resultMap="WmsInWarehouseApplyDetailResult">
+        <include refid="selectWmsInWarehouseApplyDetailVo"/>
+        <where>  
+            <if test="applyId != null "> and apply_id = #{applyId}</if>
+            <if test="materialId != null "> and material_id = #{materialId}</if>
+            <if test="warehouseId != null "> and warehouse_id = #{warehouseId}</if>
+            <if test="whLocationId != null "> and wh_location_id = #{whLocationId}</if>
+            <if test="whRegionId != null "> and wh_region_id = #{whRegionId}</if>
+        </where>
+    </select>
+    
+    <select id="selectWmsInWarehouseApplyDetailById" parameterType="Long" resultMap="WmsInWarehouseApplyDetailResult">
+        <include refid="selectWmsInWarehouseApplyDetailVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertWmsInWarehouseApplyDetail" parameterType="WmsInWarehouseApplyDetail" useGeneratedKeys="true" keyProperty="id">
+        insert into wms_in_warehouse_apply_detail
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="applyId != null">apply_id,</if>
+            <if test="materialId != null">material_id,</if>
+            <if test="warehouseId != null">warehouse_id,</if>
+            <if test="whLocationId != null">wh_location_id,</if>
+            <if test="whRegionId != null">wh_region_id,</if>
+            <if test="totalQuantity != null">total_quantity,</if>
+            <if test="inQuantity != null">in_quantity,</if>
+            <if test="serialNo != null">serial_no,</if>
+            <if test="batchNo != null">batch_no,</if>
+            <if test="productDate != null">product_date,</if>
+            <if test="manufacturer != null">manufacturer,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="applyId != null">#{applyId},</if>
+            <if test="materialId != null">#{materialId},</if>
+            <if test="warehouseId != null">#{warehouseId},</if>
+            <if test="whLocationId != null">#{whLocationId},</if>
+            <if test="whRegionId != null">#{whRegionId},</if>
+            <if test="totalQuantity != null">#{totalQuantity},</if>
+            <if test="inQuantity != null">#{inQuantity},</if>
+            <if test="serialNo != null">#{serialNo},</if>
+            <if test="batchNo != null">#{batchNo},</if>
+            <if test="productDate != null">#{productDate},</if>
+            <if test="manufacturer != null">#{manufacturer},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWmsInWarehouseApplyDetail" parameterType="WmsInWarehouseApplyDetail">
+        update wms_in_warehouse_apply_detail
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="applyId != null">apply_id = #{applyId},</if>
+            <if test="materialId != null">material_id = #{materialId},</if>
+            <if test="warehouseId != null">warehouse_id = #{warehouseId},</if>
+            <if test="whLocationId != null">wh_location_id = #{whLocationId},</if>
+            <if test="whRegionId != null">wh_region_id = #{whRegionId},</if>
+            <if test="totalQuantity != null">total_quantity = #{totalQuantity},</if>
+            <if test="inQuantity != null">in_quantity = #{inQuantity},</if>
+            <if test="serialNo != null">serial_no = #{serialNo},</if>
+            <if test="batchNo != null">batch_no = #{batchNo},</if>
+            <if test="productDate != null">product_date = #{productDate},</if>
+            <if test="manufacturer != null">manufacturer = #{manufacturer},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteWmsInWarehouseApplyDetailById" parameterType="Long">
+        delete from wms_in_warehouse_apply_detail where id = #{id}
+    </delete>
+
+    <delete id="deleteWmsInWarehouseApplyDetailByIds" parameterType="String">
+        delete from wms_in_warehouse_apply_detail where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neu.carbon.wms.mapper.WmsReplenishApplyDetailMapper">
+    
+    <resultMap type="WmsReplenishApplyDetail" id="WmsReplenishApplyDetailResult">
+        <result property="id"    column="id"    />
+        <result property="applyId"    column="apply_id"    />
+        <result property="materialId"    column="material_id"    />
+        <result property="quantity"    column="quantity"    />
+        <result property="warehouseId"    column="warehouse_id"    />
+        <result property="whRegionId"    column="wh_region_id"    />
+        <result property="whLocationId"    column="wh_location_id"    />
+        <result property="detailRemark"    column="detail_remark"    />
+    </resultMap>
+
+    <sql id="selectWmsReplenishApplyDetailVo">
+        select id, apply_id, material_id, quantity, warehouse_id, wh_region_id, wh_location_id, detail_remark from wms_replenish_apply_detail
+    </sql>
+
+    <select id="selectWmsReplenishApplyDetailList" parameterType="WmsReplenishApplyDetail" resultMap="WmsReplenishApplyDetailResult">
+        <include refid="selectWmsReplenishApplyDetailVo"/>
+        <where>  
+            <if test="applyId != null "> and apply_id = #{applyId}</if>
+            <if test="materialId != null "> and material_id = #{materialId}</if>
+        </where>
+    </select>
+    
+    <select id="selectWmsReplenishApplyDetailById" parameterType="Long" resultMap="WmsReplenishApplyDetailResult">
+        <include refid="selectWmsReplenishApplyDetailVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertWmsReplenishApplyDetail" parameterType="WmsReplenishApplyDetail" useGeneratedKeys="true" keyProperty="id">
+        insert into wms_replenish_apply_detail
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="applyId != null">apply_id,</if>
+            <if test="materialId != null">material_id,</if>
+            <if test="quantity != null">quantity,</if>
+            <if test="warehouseId != null">warehouse_id,</if>
+            <if test="whRegionId != null">wh_region_id,</if>
+            <if test="whLocationId != null">wh_location_id,</if>
+            <if test="detailRemark != null">detail_remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="applyId != null">#{applyId},</if>
+            <if test="materialId != null">#{materialId},</if>
+            <if test="quantity != null">#{quantity},</if>
+            <if test="warehouseId != null">#{warehouseId},</if>
+            <if test="whRegionId != null">#{whRegionId},</if>
+            <if test="whLocationId != null">#{whLocationId},</if>
+            <if test="detailRemark != null">#{detailRemark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWmsReplenishApplyDetail" parameterType="WmsReplenishApplyDetail">
+        update wms_replenish_apply_detail
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="applyId != null">apply_id = #{applyId},</if>
+            <if test="materialId != null">material_id = #{materialId},</if>
+            <if test="quantity != null">quantity = #{quantity},</if>
+            <if test="warehouseId != null">warehouse_id = #{warehouseId},</if>
+            <if test="whRegionId != null">wh_region_id = #{whRegionId},</if>
+            <if test="whLocationId != null">wh_location_id = #{whLocationId},</if>
+            <if test="detailRemark != null">detail_remark = #{detailRemark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteWmsReplenishApplyDetailById" parameterType="Long">
+        delete from wms_replenish_apply_detail where id = #{id}
+    </delete>
+
+    <delete id="deleteWmsReplenishApplyDetailByIds" parameterType="String">
+        delete from wms_replenish_apply_detail where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neu.carbon.wms.mapper.WmsDispatchBillDetailMapper">
+    
+    <resultMap type="WmsDispatchBillDetail" id="WmsDispatchBillDetailResult">
+        <result property="id"    column="id"    />
+        <result property="dispatchBillId"    column="dispatch_bill_id"    />
+        <result property="plateNo"    column="plate_no"    />
+        <result property="driver"    column="driver"    />
+        <result property="contactTel"    column="contact_tel"    />
+        <result property="load"    column="load"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectWmsDispatchBillDetailVo">
+        select id, dispatch_bill_id, plate_no, driver, contact_tel, load, remark from wms_dispatch_bill_detail
+    </sql>
+
+    <select id="selectWmsDispatchBillDetailList" parameterType="WmsDispatchBillDetail" resultMap="WmsDispatchBillDetailResult">
+        <include refid="selectWmsDispatchBillDetailVo"/>
+        <where>  
+            <if test="dispatchBillId != null "> and dispatch_bill_id = #{dispatchBillId}</if>
+            <if test="plateNo != null  and plateNo != ''"> and plate_no like concat('%', #{plateNo}, '%')</if>
+            <if test="driver != null  and driver != ''"> and driver like concat('%', #{driver}, '%')</if>
+            <if test="contactTel != null  and contactTel != ''"> and contact_tel = #{contactTel}</if>
+            <if test="load != null "> and load = #{load}</if>
+        </where>
+    </select>
+    
+    <select id="selectWmsDispatchBillDetailById" parameterType="Long" resultMap="WmsDispatchBillDetailResult">
+        <include refid="selectWmsDispatchBillDetailVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertWmsDispatchBillDetail" parameterType="WmsDispatchBillDetail" useGeneratedKeys="true" keyProperty="id">
+        insert into wms_dispatch_bill_detail
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="dispatchBillId != null">dispatch_bill_id,</if>
+            <if test="plateNo != null and plateNo != ''">plate_no,</if>
+            <if test="driver != null and driver != ''">driver,</if>
+            <if test="contactTel != null and contactTel != ''">contact_tel,</if>
+            <if test="load != null">load,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="dispatchBillId != null">#{dispatchBillId},</if>
+            <if test="plateNo != null and plateNo != ''">#{plateNo},</if>
+            <if test="driver != null and driver != ''">#{driver},</if>
+            <if test="contactTel != null and contactTel != ''">#{contactTel},</if>
+            <if test="load != null">#{load},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWmsDispatchBillDetail" parameterType="WmsDispatchBillDetail">
+        update wms_dispatch_bill_detail
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="dispatchBillId != null">dispatch_bill_id = #{dispatchBillId},</if>
+            <if test="plateNo != null and plateNo != ''">plate_no = #{plateNo},</if>
+            <if test="driver != null and driver != ''">driver = #{driver},</if>
+            <if test="contactTel != null and contactTel != ''">contact_tel = #{contactTel},</if>
+            <if test="load != null">load = #{load},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteWmsDispatchBillDetailById" parameterType="Long">
+        delete from wms_dispatch_bill_detail where id = #{id}
+    </delete>
+
+    <delete id="deleteWmsDispatchBillDetailByIds" parameterType="String">
+        delete from wms_dispatch_bill_detail where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

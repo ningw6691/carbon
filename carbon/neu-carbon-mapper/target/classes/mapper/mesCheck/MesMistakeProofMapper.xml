@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neu.carbon.mes.mapper.MesMistakeProofMapper">
+    
+    <resultMap type="MesMistakeProof" id="MesMistakeProofResult">
+        <result property="id"    column="id"    />
+        <result property="type"    column="type"    />
+        <result property="mistakeItem"    column="mistake_item"    />
+        <result property="mistakeResult"    column="mistake_result"    />
+        <result property="preventMethod"    column="prevent_method"    />
+    </resultMap>
+
+    <sql id="selectMesMistakeProofVo">
+        select id, type, mistake_item, mistake_result, prevent_method from mes_mistake_proof
+    </sql>
+
+    <select id="selectMesMistakeProofList" parameterType="MesMistakeProof" resultMap="MesMistakeProofResult">
+        <include refid="selectMesMistakeProofVo"/>
+        <where>  
+            <if test="type != null  and type != ''"> and type = #{type}</if>
+            <if test="mistakeItem != null  and mistakeItem != ''"> and mistake_item like concat('%', #{mistakeItem}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectMesMistakeProofById" parameterType="Long" resultMap="MesMistakeProofResult">
+        <include refid="selectMesMistakeProofVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertMesMistakeProof" parameterType="MesMistakeProof" useGeneratedKeys="true" keyProperty="id">
+        insert into mes_mistake_proof
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="type != null">type,</if>
+            <if test="mistakeItem != null">mistake_item,</if>
+            <if test="mistakeResult != null">mistake_result,</if>
+            <if test="preventMethod != null">prevent_method,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="type != null">#{type},</if>
+            <if test="mistakeItem != null">#{mistakeItem},</if>
+            <if test="mistakeResult != null">#{mistakeResult},</if>
+            <if test="preventMethod != null">#{preventMethod},</if>
+         </trim>
+    </insert>
+
+    <update id="updateMesMistakeProof" parameterType="MesMistakeProof">
+        update mes_mistake_proof
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="type != null">type = #{type},</if>
+            <if test="mistakeItem != null">mistake_item = #{mistakeItem},</if>
+            <if test="mistakeResult != null">mistake_result = #{mistakeResult},</if>
+            <if test="preventMethod != null">prevent_method = #{preventMethod},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteMesMistakeProofById" parameterType="Long">
+        delete from mes_mistake_proof where id = #{id}
+    </delete>
+
+    <delete id="deleteMesMistakeProofByIds" parameterType="String">
+        delete from mes_mistake_proof where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

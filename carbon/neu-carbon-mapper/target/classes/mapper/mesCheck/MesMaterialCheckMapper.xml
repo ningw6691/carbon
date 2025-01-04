@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neu.carbon.mes.mapper.MesMaterialCheckMapper">
+    
+    <resultMap type="MesMaterialCheck" id="MesMaterialCheckResult">
+        <result property="id"    column="id"    />
+        <result property="serialNo"    column="serial_no"    />
+        <result property="materialRequisitionId"    column="material_requisition_id"    />
+        <result property="materialRequisitionNo"    column="material_requisition_no"    />
+        <result property="materialId"    column="material_id"    />
+        <result property="checkStandardId"    column="check_standard_id"    />
+        <result property="requireQuantity"    column="require_quantity"    />
+        <result property="receiveQuantity"    column="receive_quantity"    />
+        <result property="checkQuantity"    column="check_quantity"    />
+        <result property="checkValue"    column="check_value"    />
+        <result property="maxValue"    column="max_value"    />
+        <result property="minValue"    column="min_value"    />
+        <result property="checkResult"    column="check_result"    />
+        <result property="remark"    column="remark"    />
+        <result property="checkUser"    column="check_user"    />
+        <result property="checkDate"    column="check_date"    />
+        <result property="materialName"    column="name"    />
+        <result property="materialCode"    column="code"    />
+        <result property="materialModel"    column="model"    />
+        <result property="materialSpecification"    column="specification"    />
+        <result property="materialUnit"    column="unit"    />
+        <result property="checkItemName"    column="check_item_name"    />
+    </resultMap>
+
+    <sql id="selectMesMaterialCheckVo">
+        select mc.id, mc.serial_no, mc.material_requisition_id, mc.material_requisition_no, mc.material_id, mc.check_standard_id, mc.require_quantity, mc.receive_quantity, mc.check_quantity, mc.check_value, mc.max_value, mc.min_value, mc.check_result, mc.remark, mc.check_user, mc.check_date, m.name, m.code, m.model, m.specification, m.unit, cs.check_item_name
+        from mes_material_check mc left join wms_material_info m on mc.material_id = m.id
+        left join mes_check_standard cs on cs.id = mc.check_standard_id
+    </sql>
+
+    <select id="selectMesMaterialCheckList" parameterType="MesMaterialCheck" resultMap="MesMaterialCheckResult">
+        <include refid="selectMesMaterialCheckVo"/>
+        <where>  
+            <if test="serialNo != null  and serialNo != ''"> and mc.serial_no like concat('%', #{serialNo}, '%')</if>
+            <if test="materialRequisitionId != null "> and mc.material_requisition_id = #{materialRequisitionId}</if>
+            <if test="materialRequisitionNo != null  and materialRequisitionNo != ''"> and mc.material_requisition_no like concat('%', #{materialRequisitionNo}, '%')</if>
+            <if test="materialId != null "> and mc.material_id = #{materialId}</if>
+            <if test="checkStandardId != null "> and mc.check_standard_id = #{checkStandardId}</if>
+            <if test="checkResult != null  and checkResult != ''"> and mc.check_result = #{checkResult}</if>
+            <if test="checkUser != null  and checkUser != ''"> and mc.check_user = #{checkUser}</if>
+            <if test="params.beginCheckDate != null and params.beginCheckDate != '' and params.endCheckDate != null and params.endCheckDate != ''"> and mc.check_date between #{params.beginCheckDate} and #{params.endCheckDate}</if>
+            <if test="materialName != null  and materialName != ''"> and m.name like concat('%', #{materialName}, '%')</if>
+            <if test="checkItemName != null  and checkItemName != ''"> and cs.check_item_name like concat('%', #{checkItemName}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectMesMaterialCheckById" parameterType="Long" resultMap="MesMaterialCheckResult">
+        <include refid="selectMesMaterialCheckVo"/>
+        where mc.id = #{id}
+    </select>
+        
+    <insert id="insertMesMaterialCheck" parameterType="MesMaterialCheck" useGeneratedKeys="true" keyProperty="id">
+        insert into mes_material_check
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="serialNo != null">serial_no,</if>
+            <if test="materialRequisitionId != null">material_requisition_id,</if>
+            <if test="materialRequisitionNo != null and materialRequisitionNo != ''">material_requisition_no,</if>
+            <if test="materialId != null">material_id,</if>
+            <if test="checkStandardId != null">check_standard_id,</if>
+            <if test="requireQuantity != null">require_quantity,</if>
+            <if test="receiveQuantity != null">receive_quantity,</if>
+            <if test="checkQuantity != null">check_quantity,</if>
+            <if test="checkValue != null">check_value,</if>
+            <if test="maxValue != null">max_value,</if>
+            <if test="minValue != null">min_value,</if>
+            <if test="checkResult != null and checkResult != ''">check_result,</if>
+            <if test="remark != null">remark,</if>
+            <if test="checkUser != null">check_user,</if>
+            <if test="checkDate != null">check_date,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="serialNo != null">#{serialNo},</if>
+            <if test="materialRequisitionId != null">#{materialRequisitionId},</if>
+            <if test="materialRequisitionNo != null and materialRequisitionNo != ''">#{materialRequisitionNo},</if>
+            <if test="materialId != null">#{materialId},</if>
+            <if test="checkStandardId != null">#{checkStandardId},</if>
+            <if test="requireQuantity != null">#{requireQuantity},</if>
+            <if test="receiveQuantity != null">#{receiveQuantity},</if>
+            <if test="checkQuantity != null">#{checkQuantity},</if>
+            <if test="checkValue != null">#{checkValue},</if>
+            <if test="maxValue != null">#{maxValue},</if>
+            <if test="minValue != null">#{minValue},</if>
+            <if test="checkResult != null and checkResult != ''">#{checkResult},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="checkUser != null">#{checkUser},</if>
+            <if test="checkDate != null">#{checkDate},</if>
+         </trim>
+    </insert>
+
+    <update id="updateMesMaterialCheck" parameterType="MesMaterialCheck">
+        update mes_material_check
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="serialNo != null">serial_no = #{serialNo},</if>
+            <if test="materialRequisitionId != null">material_requisition_id = #{materialRequisitionId},</if>
+            <if test="materialRequisitionNo != null and materialRequisitionNo != ''">material_requisition_no = #{materialRequisitionNo},</if>
+            <if test="materialId != null">material_id = #{materialId},</if>
+            <if test="checkStandardId != null">check_standard_id = #{checkStandardId},</if>
+            <if test="requireQuantity != null">require_quantity = #{requireQuantity},</if>
+            <if test="receiveQuantity != null">receive_quantity = #{receiveQuantity},</if>
+            <if test="checkQuantity != null">check_quantity = #{checkQuantity},</if>
+            <if test="checkValue != null">check_value = #{checkValue},</if>
+            <if test="maxValue != null">max_value = #{maxValue},</if>
+            <if test="minValue != null">min_value = #{minValue},</if>
+            <if test="checkResult != null and checkResult != ''">check_result = #{checkResult},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="checkUser != null">check_user = #{checkUser},</if>
+            <if test="checkDate != null">check_date = #{checkDate},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteMesMaterialCheckById" parameterType="Long">
+        delete from mes_material_check where id = #{id}
+    </delete>
+
+    <delete id="deleteMesMaterialCheckByIds" parameterType="String">
+        delete from mes_material_check where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

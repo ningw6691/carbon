@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="neu-carbon-bid" />
+        <module name="neu-carbon-scm" />
+        <module name="neu-carbon-wms" />
+        <module name="neu-admin" />
+        <module name="neu-carbon-mes" />
+        <module name="neu-generator" />
+        <module name="neu-quartz" />
+        <module name="neu-carbon-footprint" />
+        <module name="neu-common-biz" />
+        <module name="neu-framework" />
+        <module name="neu-system" />
+        <module name="neu-carbon-report" />
+        <module name="neu-common" />
+        <module name="neu-carbon-mapper" />
+        <module name="neu-carbon-service" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="ljxl" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

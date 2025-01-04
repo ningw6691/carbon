@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neu.carbon.scm.mapper.ScmSaleReturnDetailMapper">
+    
+    <resultMap type="ScmSaleReturnDetail" id="ScmSaleReturnDetailResult">
+        <result property="id"    column="id"    />
+        <result property="returnId"    column="return_id"    />
+        <result property="materialId"    column="material_id"    />
+        <result property="price"    column="price"    />
+        <result property="bookQuantity"    column="book_quantity"    />
+        <result property="deliveryQuantity"    column="delivery_quantity"    />
+        <result property="returnQuantity"    column="return_quantity"    />
+        <result property="detailRemark"    column="detail_remark"    />
+    </resultMap>
+
+    <sql id="selectScmSaleReturnDetailVo">
+        select id, return_id, material_id, price, book_quantity, delivery_quantity, return_quantity, detail_remark from scm_sale_return_detail
+    </sql>
+
+    <select id="selectScmSaleReturnDetailList" parameterType="ScmSaleReturnDetail" resultMap="ScmSaleReturnDetailResult">
+        <include refid="selectScmSaleReturnDetailVo"/>
+        <where>  
+            <if test="returnId != null "> and return_id = #{returnId}</if>
+            <if test="materialId != null "> and material_id = #{materialId}</if>
+        </where>
+    </select>
+    
+    <select id="selectScmSaleReturnDetailById" parameterType="Long" resultMap="ScmSaleReturnDetailResult">
+        <include refid="selectScmSaleReturnDetailVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertScmSaleReturnDetail" parameterType="ScmSaleReturnDetail" useGeneratedKeys="true" keyProperty="id">
+        insert into scm_sale_return_detail
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="returnId != null">return_id,</if>
+            <if test="materialId != null">material_id,</if>
+            <if test="price != null">price,</if>
+            <if test="bookQuantity != null">book_quantity,</if>
+            <if test="deliveryQuantity != null">delivery_quantity,</if>
+            <if test="returnQuantity != null">return_quantity,</if>
+            <if test="detailRemark != null">detail_remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="returnId != null">#{returnId},</if>
+            <if test="materialId != null">#{materialId},</if>
+            <if test="price != null">#{price},</if>
+            <if test="bookQuantity != null">#{bookQuantity},</if>
+            <if test="deliveryQuantity != null">#{deliveryQuantity},</if>
+            <if test="returnQuantity != null">#{returnQuantity},</if>
+            <if test="detailRemark != null">#{detailRemark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateScmSaleReturnDetail" parameterType="ScmSaleReturnDetail">
+        update scm_sale_return_detail
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="returnId != null">return_id = #{returnId},</if>
+            <if test="materialId != null">material_id = #{materialId},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="bookQuantity != null">book_quantity = #{bookQuantity},</if>
+            <if test="deliveryQuantity != null">delivery_quantity = #{deliveryQuantity},</if>
+            <if test="returnQuantity != null">return_quantity = #{returnQuantity},</if>
+            <if test="detailRemark != null">detail_remark = #{detailRemark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteScmSaleReturnDetailById" parameterType="Long">
+        delete from scm_sale_return_detail where id = #{id}
+    </delete>
+
+    <delete id="deleteScmSaleReturnDetailByIds" parameterType="String">
+        delete from scm_sale_return_detail where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

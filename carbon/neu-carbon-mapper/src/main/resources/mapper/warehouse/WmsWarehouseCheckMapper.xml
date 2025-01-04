@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neu.carbon.wms.mapper.WmsWarehouseCheckMapper">
+    
+    <resultMap type="WmsWarehouseCheck" id="WmsWarehouseCheckResult">
+        <result property="id"    column="id"    />
+        <result property="serialNo"    column="serial_no"    />
+        <result property="materialId"    column="material_id"    />
+        <result property="warehouseId"    column="warehouse_id"    />
+        <result property="whRegionId"    column="wh_region_id"    />
+        <result property="whLocationId"    column="wh_location_id"    />
+        <result property="batchNo"    column="batch_no"    />
+        <result property="checkType"    column="check_type"    />
+        <result property="stockMonth"    column="stock_month"    />
+        <result property="checkDate"    column="check_date"    />
+        <result property="checkUser"    column="check_user"    />
+        <result property="inventory"    column="inventory"    />
+        <result property="actualInventory"    column="actual_inventory"    />
+        <result property="reason"    column="reason"    />
+    </resultMap>
+
+    <sql id="selectWmsWarehouseCheckVo">
+        select id, serial_no, material_id, warehouse_id, wh_region_id, wh_location_id, batch_no, check_type, stock_month, check_date, check_user, inventory, actual_inventory, reason from wms_warehouse_check
+    </sql>
+
+    <select id="selectWmsWarehouseCheckList" parameterType="WmsWarehouseCheck" resultMap="WmsWarehouseCheckResult">
+        <include refid="selectWmsWarehouseCheckVo"/>
+        <where>  
+            <if test="serialNo != null  and serialNo != ''"> and serial_no like concat('%', #{serialNo}, '%')</if>
+            <if test="materialId != null "> and material_id = #{materialId}</if>
+            <if test="warehouseId != null "> and warehouse_id = #{warehouseId}</if>
+            <if test="whRegionId != null "> and wh_region_id = #{whRegionId}</if>
+            <if test="whLocationId != null "> and wh_location_id = #{whLocationId}</if>
+            <if test="batchNo != null  and batchNo != ''"> and batch_no = #{batchNo}</if>
+            <if test="checkType != null  and checkType != ''"> and check_type = #{checkType}</if>
+            <if test="stockMonth != null  and stockMonth != ''"> and stock_month = #{stockMonth}</if>
+            <if test="params.beginCheckDate != null and params.beginCheckDate != '' and params.endCheckDate != null and params.endCheckDate != ''"> and check_date between #{params.beginCheckDate} and #{params.endCheckDate}</if>
+            <if test="checkUser != null  and checkUser != ''"> and check_user = #{checkUser}</if>
+        </where>
+    </select>
+    
+    <select id="selectWmsWarehouseCheckById" parameterType="Long" resultMap="WmsWarehouseCheckResult">
+        <include refid="selectWmsWarehouseCheckVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertWmsWarehouseCheck" parameterType="WmsWarehouseCheck" useGeneratedKeys="true" keyProperty="id">
+        insert into wms_warehouse_check
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="serialNo != null">serial_no,</if>
+            <if test="materialId != null">material_id,</if>
+            <if test="warehouseId != null">warehouse_id,</if>
+            <if test="whRegionId != null">wh_region_id,</if>
+            <if test="whLocationId != null">wh_location_id,</if>
+            <if test="batchNo != null and batchNo != ''">batch_no,</if>
+            <if test="checkType != null">check_type,</if>
+            <if test="stockMonth != null and stockMonth != ''">stock_month,</if>
+            <if test="checkDate != null">check_date,</if>
+            <if test="checkUser != null">check_user,</if>
+            <if test="inventory != null">inventory,</if>
+            <if test="actualInventory != null">actual_inventory,</if>
+            <if test="reason != null and reason != ''">reason,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="serialNo != null">#{serialNo},</if>
+            <if test="materialId != null">#{materialId},</if>
+            <if test="warehouseId != null">#{warehouseId},</if>
+            <if test="whRegionId != null">#{whRegionId},</if>
+            <if test="whLocationId != null">#{whLocationId},</if>
+            <if test="batchNo != null and batchNo != ''">#{batchNo},</if>
+            <if test="checkType != null">#{checkType},</if>
+            <if test="stockMonth != null and stockMonth != ''">#{stockMonth},</if>
+            <if test="checkDate != null">#{checkDate},</if>
+            <if test="checkUser != null">#{checkUser},</if>
+            <if test="inventory != null">#{inventory},</if>
+            <if test="actualInventory != null">#{actualInventory},</if>
+            <if test="reason != null and reason != ''">#{reason},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWmsWarehouseCheck" parameterType="WmsWarehouseCheck">
+        update wms_warehouse_check
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="serialNo != null">serial_no = #{serialNo},</if>
+            <if test="materialId != null">material_id = #{materialId},</if>
+            <if test="warehouseId != null">warehouse_id = #{warehouseId},</if>
+            <if test="whRegionId != null">wh_region_id = #{whRegionId},</if>
+            <if test="whLocationId != null">wh_location_id = #{whLocationId},</if>
+            <if test="batchNo != null and batchNo != ''">batch_no = #{batchNo},</if>
+            <if test="checkType != null">check_type = #{checkType},</if>
+            <if test="stockMonth != null and stockMonth != ''">stock_month = #{stockMonth},</if>
+            <if test="checkDate != null">check_date = #{checkDate},</if>
+            <if test="checkUser != null">check_user = #{checkUser},</if>
+            <if test="inventory != null">inventory = #{inventory},</if>
+            <if test="actualInventory != null">actual_inventory = #{actualInventory},</if>
+            <if test="reason != null and reason != ''">reason = #{reason},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteWmsWarehouseCheckById" parameterType="Long">
+        delete from wms_warehouse_check where id = #{id}
+    </delete>
+
+    <delete id="deleteWmsWarehouseCheckByIds" parameterType="String">
+        delete from wms_warehouse_check where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

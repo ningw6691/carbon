@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neu.carbon.scm.mapper.VScmPurchaseArriveDetailMapper">
+    
+    <resultMap type="VScmPurchaseArriveDetail" id="VScmPurchaseArriveDetailResult">
+        <result property="contractNo"    column="contract_no"    />
+        <result property="supplierId"    column="supplier_id"    />
+        <result property="arriveId"    column="arrive_id"    />
+        <result property="supplierName"    column="supplier_name"    />
+        <result property="materialId"    column="material_id"    />
+        <result property="materialName"    column="material_name"    />
+        <result property="materialCode"    column="material_code"    />
+        <result property="materialModel"    column="material_model"    />
+        <result property="materialSpecification"    column="material_specification"    />
+        <result property="materialUnit"    column="material_unit"    />
+        <result property="batchNo"    column="batch_no"    />
+        <result property="price"    column="price"    />
+        <result property="arriveQuantity"    column="arrive_quantity"    />
+        <result property="returnQuantity"    column="return_quantity"    />
+        <result property="inWarehouseQuantity"    column="in_warehouse_quantity"    />
+    </resultMap>
+
+    <sql id="selectVScmPurchaseArriveDetailVo">
+        select contract_no, supplier_id, arrive_id, supplier_name, material_id, material_name, material_code, material_model, material_specification, material_unit, batch_no, price, arrive_quantity, return_quantity, in_warehouse_quantity from v_scm_purchase_arrive_detail
+    </sql>
+
+    <select id="selectVScmPurchaseArriveDetailList" parameterType="VScmPurchaseArriveDetail" resultMap="VScmPurchaseArriveDetailResult">
+        <include refid="selectVScmPurchaseArriveDetailVo"/>
+        <where>  
+            <if test="contractNo != null  and contractNo != ''"> and contract_no like concat('%', #{contractNo}, '%')</if>
+            <if test="supplierId != null "> and supplier_id = #{supplierId}</if>
+            <if test="supplierName != null  and supplierName != ''"> and supplier_name like concat('%', #{supplierName}, '%')</if>
+            <if test="materialId != null "> and material_id = #{materialId}</if>
+            <if test="materialName != null  and materialName != ''"> and material_name like concat('%', #{materialName}, '%')</if>
+            <if test="materialCode != null  and materialCode != ''"> and material_code = #{materialCode}</if>
+            <if test="materialModel != null  and materialModel != ''"> and material_model = #{materialModel}</if>
+            <if test="materialSpecification != null  and materialSpecification != ''"> and material_specification = #{materialSpecification}</if>
+            <if test="materialUnit != null  and materialUnit != ''"> and material_unit = #{materialUnit}</if>
+            <if test="batchNo != null  and batchNo != ''"> and batch_no = #{batchNo}</if>
+            <if test="price != null "> and price = #{price}</if>
+            <if test="arriveQuantity != null "> and arrive_quantity = #{arriveQuantity}</if>
+            <if test="returnQuantity != null "> and return_quantity = #{returnQuantity}</if>
+            <if test="inWarehouseQuantity != null "> and in_warehouse_quantity = #{inWarehouseQuantity}</if>
+        </where>
+    </select>
+    
+</mapper>

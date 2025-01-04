@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/neu-admin/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/neu-admin/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/neu-carbon-bid/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/neu-carbon-bid/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/neu-carbon-footprint/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/neu-carbon-footprint/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/neu-carbon-mapper/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/neu-carbon-mapper/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/neu-carbon-mes/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/neu-carbon-mes/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/neu-carbon-report/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/neu-carbon-report/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/neu-carbon-scm/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/neu-carbon-scm/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/neu-carbon-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/neu-carbon-service/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/neu-carbon-wms/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/neu-carbon-wms/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/neu-common-biz/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/neu-common-biz/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/neu-common/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/neu-common/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/neu-framework/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/neu-framework/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/neu-generator/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/neu-generator/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/neu-quartz/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/neu-quartz/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/neu-system/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/neu-system/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
+  </component>
+</project>

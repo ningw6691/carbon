@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neu.carbon.scm.mapper.ScmSalePlanDetailMapper">
+    
+    <resultMap type="ScmSalePlanDetail" id="ScmSalePlanDetailResult">
+        <result property="id"    column="id"    />
+        <result property="planId"    column="plan_id"    />
+        <result property="materialId"    column="material_id"    />
+        <result property="saleAmount"    column="sale_amount"    />
+        <result property="detailRemark"    column="detail_remark"    />
+    </resultMap>
+
+    <sql id="selectScmSalePlanDetailVo">
+        select id, plan_id, material_id, sale_amount, detail_remark from scm_sale_plan_detail
+    </sql>
+
+    <select id="selectScmSalePlanDetailList" parameterType="ScmSalePlanDetail" resultMap="ScmSalePlanDetailResult">
+        <include refid="selectScmSalePlanDetailVo"/>
+        <where>  
+            <if test="planId != null "> and plan_id = #{planId}</if>
+            <if test="materialId != null "> and material_id = #{materialId}</if>
+            <if test="saleAmount != null "> and sale_amount = #{saleAmount}</if>
+            <if test="detailRemark != null  and detailRemark != ''"> and detail_remark = #{detailRemark}</if>
+        </where>
+    </select>
+    
+    <select id="selectScmSalePlanDetailById" parameterType="Long" resultMap="ScmSalePlanDetailResult">
+        <include refid="selectScmSalePlanDetailVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertScmSalePlanDetail" parameterType="ScmSalePlanDetail" useGeneratedKeys="true" keyProperty="id">
+        insert into scm_sale_plan_detail
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="planId != null">plan_id,</if>
+            <if test="materialId != null">material_id,</if>
+            <if test="saleAmount != null">sale_amount,</if>
+            <if test="detailRemark != null">detail_remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="planId != null">#{planId},</if>
+            <if test="materialId != null">#{materialId},</if>
+            <if test="saleAmount != null">#{saleAmount},</if>
+            <if test="detailRemark != null">#{detailRemark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateScmSalePlanDetail" parameterType="ScmSalePlanDetail">
+        update scm_sale_plan_detail
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="planId != null">plan_id = #{planId},</if>
+            <if test="materialId != null">material_id = #{materialId},</if>
+            <if test="saleAmount != null">sale_amount = #{saleAmount},</if>
+            <if test="detailRemark != null">detail_remark = #{detailRemark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteScmSalePlanDetailById" parameterType="Long">
+        delete from scm_sale_plan_detail where id = #{id}
+    </delete>
+
+    <delete id="deleteScmSalePlanDetailByIds" parameterType="String">
+        delete from scm_sale_plan_detail where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

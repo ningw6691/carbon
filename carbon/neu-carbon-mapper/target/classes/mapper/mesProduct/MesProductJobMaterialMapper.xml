@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neu.carbon.mes.mapper.MesProductJobMaterialMapper">
+    
+    <resultMap type="MesProductJobMaterial" id="MesProductJobMaterialResult">
+        <result property="id"    column="id"    />
+        <result property="jobId"    column="job_id"    />
+        <result property="materialId"    column="material_id"    />
+        <result property="usageQuantity"    column="usage_quantity"    />
+        <result property="detailRemark"    column="detail_remark"    />
+    </resultMap>
+
+    <sql id="selectMesProductJobMaterialVo">
+        select id, job_id, material_id, usage_quantity, detail_remark from mes_product_job_material
+    </sql>
+
+    <select id="selectMesProductJobMaterialList" parameterType="MesProductJobMaterial" resultMap="MesProductJobMaterialResult">
+        <include refid="selectMesProductJobMaterialVo"/>
+        <where>  
+            <if test="jobId != null "> and job_id = #{jobId}</if>
+            <if test="materialId != null "> and material_id = #{materialId}</if>
+        </where>
+    </select>
+    
+    <select id="selectMesProductJobMaterialById" parameterType="Long" resultMap="MesProductJobMaterialResult">
+        <include refid="selectMesProductJobMaterialVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertMesProductJobMaterial" parameterType="MesProductJobMaterial" useGeneratedKeys="true" keyProperty="id">
+        insert into mes_product_job_material
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="jobId != null">job_id,</if>
+            <if test="materialId != null">material_id,</if>
+            <if test="usageQuantity != null">usage_quantity,</if>
+            <if test="detailRemark != null">detail_remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="jobId != null">#{jobId},</if>
+            <if test="materialId != null">#{materialId},</if>
+            <if test="usageQuantity != null">#{usageQuantity},</if>
+            <if test="detailRemark != null">#{detailRemark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateMesProductJobMaterial" parameterType="MesProductJobMaterial">
+        update mes_product_job_material
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="jobId != null">job_id = #{jobId},</if>
+            <if test="materialId != null">material_id = #{materialId},</if>
+            <if test="usageQuantity != null">usage_quantity = #{usageQuantity},</if>
+            <if test="detailRemark != null">detail_remark = #{detailRemark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteMesProductJobMaterialById" parameterType="Long">
+        delete from mes_product_job_material where id = #{id}
+    </delete>
+
+    <delete id="deleteMesProductJobMaterialByIds" parameterType="String">
+        delete from mes_product_job_material where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

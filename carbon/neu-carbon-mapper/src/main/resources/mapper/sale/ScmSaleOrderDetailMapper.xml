@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neu.carbon.scm.mapper.ScmSaleOrderDetailMapper">
+    
+    <resultMap type="ScmSaleOrderDetail" id="ScmSaleOrderDetailResult">
+        <result property="id"    column="id"    />
+        <result property="orderId"    column="order_id"    />
+        <result property="materialId"    column="material_id"    />
+        <result property="price"    column="price"    />
+        <result property="quantity"    column="quantity"    />
+        <result property="amount"    column="amount"    />
+        <result property="detailRemark"    column="detail_remark"    />
+    </resultMap>
+
+    <sql id="selectScmSaleOrderDetailVo">
+        select id, order_id, material_id, price, quantity, amount, detail_remark from scm_sale_order_detail
+    </sql>
+
+    <select id="selectScmSaleOrderDetailList" parameterType="ScmSaleOrderDetail" resultMap="ScmSaleOrderDetailResult">
+        <include refid="selectScmSaleOrderDetailVo"/>
+        <where>  
+            <if test="orderId != null "> and order_id = #{orderId}</if>
+            <if test="materialId != null "> and material_id = #{materialId}</if>
+        </where>
+    </select>
+    
+    <select id="selectScmSaleOrderDetailById" parameterType="Long" resultMap="ScmSaleOrderDetailResult">
+        <include refid="selectScmSaleOrderDetailVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertScmSaleOrderDetail" parameterType="ScmSaleOrderDetail" useGeneratedKeys="true" keyProperty="id">
+        insert into scm_sale_order_detail
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="orderId != null">order_id,</if>
+            <if test="materialId != null">material_id,</if>
+            <if test="price != null">price,</if>
+            <if test="quantity != null">quantity,</if>
+            <if test="amount != null">amount,</if>
+            <if test="detailRemark != null and detailRemark != ''">detail_remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="orderId != null">#{orderId},</if>
+            <if test="materialId != null">#{materialId},</if>
+            <if test="price != null">#{price},</if>
+            <if test="quantity != null">#{quantity},</if>
+            <if test="amount != null">#{amount},</if>
+            <if test="detailRemark != null and detailRemark != ''">#{detailRemark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateScmSaleOrderDetail" parameterType="ScmSaleOrderDetail">
+        update scm_sale_order_detail
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="orderId != null">order_id = #{orderId},</if>
+            <if test="materialId != null">material_id = #{materialId},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="quantity != null">quantity = #{quantity},</if>
+            <if test="amount != null">amount = #{amount},</if>
+            <if test="detailRemark != null and detailRemark != ''">detail_remark = #{detailRemark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteScmSaleOrderDetailById" parameterType="Long">
+        delete from scm_sale_order_detail where id = #{id}
+    </delete>
+
+    <delete id="deleteScmSaleOrderDetailByIds" parameterType="String">
+        delete from scm_sale_order_detail where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

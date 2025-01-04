@@ -1,0 +1,16 @@
+com\neu\carbon\report\controller\BaseReportController.class
+com\neu\carbon\report\controller\VMesProductPowerDetailController.class
+com\neu\carbon\report\controller\VScmPurchaseArriveDetailController.class
+com\neu\carbon\report\controller\VScmSalePlanDetailController.class
+com\neu\carbon\report\controller\VWmsOutWarehouseDetailController.class
+com\neu\carbon\report\controller\VWmsMaterialInventoryDetailController.class
+com\neu\carbon\report\controller\ScmPurchaseReportController.class
+com\neu\carbon\report\controller\MesCheckReportController.class
+com\neu\carbon\report\controller\VMesEquipmentPowerDetailController.class
+com\neu\carbon\report\controller\VScmPurchaseContractController.class
+com\neu\carbon\report\controller\VScmSaleDeliveryDetailController.class
+com\neu\carbon\report\controller\MonitorChartReportController.class
+com\neu\carbon\report\controller\VWmsInWarehouseDetailController.class
+com\neu\carbon\report\controller\BigScreenReport.class
+com\neu\carbon\report\controller\VScmSaleContractController.class
+com\neu\carbon\report\controller\ScmSaleReportController.class

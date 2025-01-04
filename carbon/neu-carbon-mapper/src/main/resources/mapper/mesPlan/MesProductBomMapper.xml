@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neu.carbon.mes.mapper.MesProductBomMapper">
+    
+    <resultMap type="MesProductBom" id="MesProductBomResult">
+        <result property="id"    column="id"    />
+        <result property="name"    column="name"    />
+        <result property="productId"    column="product_id"    />
+        <result property="description"    column="description"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <resultMap id="MesProductBomMesProductBomDetailResult" type="MesProductBom" extends="MesProductBomResult">
+        <collection property="mesProductBomDetailList" notNullColumn="id" javaType="java.util.List" resultMap="MesProductBomDetailResult" />
+    </resultMap>
+
+    <resultMap type="MesProductBomDetail" id="MesProductBomDetailResult">
+        <result property="id"    column="id"    />
+        <result property="bomId"    column="bom_id"    />
+        <result property="materialId"    column="material_id"    />
+        <result property="usage"    column="usage"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectMesProductBomVo">
+        select id, name, product_id, description, create_by, create_time, update_by, update_time from mes_product_bom
+    </sql>
+
+    <select id="selectMesProductBomList" parameterType="MesProductBom" resultMap="MesProductBomResult">
+        <include refid="selectMesProductBomVo"/>
+        <where>  
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="productId != null "> and product_id = #{productId}</if>
+        </where>
+    </select>
+    
+    <select id="selectMesProductBomById" parameterType="Long" resultMap="MesProductBomMesProductBomDetailResult">
+        select a.id, a.name, a.product_id, a.description, a.create_by, a.create_time, a.update_by, a.update_time,
+            b.id, b.bom_id, b.material_id, b.`usage`, b.remark
+        from mes_product_bom a
+        left join mes_product_bom_detail b on b.bom_id = a.id
+        where a.id = #{id}
+    </select>
+        
+    <insert id="insertMesProductBom" parameterType="MesProductBom" useGeneratedKeys="true" keyProperty="id">
+        insert into mes_product_bom
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">name,</if>
+            <if test="productId != null">product_id,</if>
+            <if test="description != null">description,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="productId != null">#{productId},</if>
+            <if test="description != null">#{description},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateMesProductBom" parameterType="MesProductBom">
+        update mes_product_bom
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="productId != null">product_id = #{productId},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteMesProductBomById" parameterType="Long">
+        delete from mes_product_bom where id = #{id}
+    </delete>
+
+    <delete id="deleteMesProductBomByIds" parameterType="String">
+        delete from mes_product_bom where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+    <delete id="deleteMesProductBomDetailByBomIds" parameterType="String">
+        delete from mes_product_bom_detail where bom_id in 
+        <foreach item="bomId" collection="array" open="(" separator="," close=")">
+            #{bomId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteMesProductBomDetailByBomId" parameterType="Long">
+        delete from mes_product_bom_detail where bom_id = #{bomId}
+    </delete>
+
+    <insert id="batchMesProductBomDetail">
+        insert into mes_product_bom_detail(  bom_id, material_id, `usage`, remark) values
+        <foreach item="item" index="index" collection="list" separator=",">
+            (  #{item.bomId}, #{item.materialId}, #{item.usage}, #{item.remark})
+        </foreach>
+    </insert>
+</mapper>

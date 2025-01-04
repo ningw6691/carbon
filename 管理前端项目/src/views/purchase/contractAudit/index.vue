@@ -1,0 +1,494 @@
+<template>
+  <div class="app-container">
+    <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="68px">
+      <el-form-item label="合同编号" prop="contractNo">
+        <el-input v-model="queryParams.contractNo" placeholder="请输入合同编号" clearable size="small"
+          @keyup.enter.native="handleQuery" />
+      </el-form-item>
+      <el-form-item label="申请编号" prop="applyNo">
+        <el-input v-model="queryParams.applyNo" placeholder="请输入申请编号" clearable size="small"
+          @keyup.enter.native="handleQuery" />
+      </el-form-item>
+      <el-form-item label="供应商" prop="supplierId">
+        <el-select v-model="queryParams.supplierId" placeholder="请选择供应商" clearable filterable size="small">
+          <el-option v-for="dict in supplierIdOptions" :key="dict.dictValue" :label="dict.dictLabel"
+            :value="dict.dictValue" />
+        </el-select>
+      </el-form-item>
+
+      <el-form-item label="签约日期">
+        <el-date-picker v-model="daterangeSignDate" size="small" style="width: 240px" value-format="yyyy-MM-dd"
+          type="daterange" range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
+      </el-form-item>
+      <el-form-item label="申请人" prop="applyUser">
+        <el-select v-model="queryParams.applyUser" placeholder="请选择申请人" clearable filterable size="small">
+          <el-option v-for="dict in applyUserOptions" :key="dict.dictValue" :label="dict.dictLabel"
+            :value="dict.dictValue" />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="申请时间">
+        <el-date-picker v-model="daterangeApplyTime" size="small" style="width: 240px" value-format="yyyy-MM-dd"
+          type="daterange" range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
+      </el-form-item>
+      <el-form-item label="申请状态" prop="applyStatus">
+        <el-select v-model="queryParams.applyStatus" placeholder="请选择申请状态" clearable filterable size="small">
+          <el-option v-for="dict in applyStatusOptions" :key="dict.dictValue" :label="dict.dictLabel"
+            :value="dict.dictValue" />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="审核人" prop="auditUser">
+        <el-select v-model="queryParams.auditUser" placeholder="请选择审核人" clearable filterable size="small">
+          <el-option v-for="dict in auditUserOptions" :key="dict.dictValue" :label="dict.dictLabel"
+            :value="dict.dictValue" />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="审核时间">
+        <el-date-picker v-model="daterangeAuditTime" size="small" style="width: 240px" value-format="yyyy-MM-dd"
+          type="daterange" range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
+      </el-form-item>
+      <el-form-item label="审核状态" prop="auditStatus">
+        <el-select v-model="queryParams.auditStatus" placeholder="请选择审核状态" clearable filterable size="small">
+          <el-option v-for="dict in auditStatusOptions" :key="dict.dictValue" :label="dict.dictLabel"
+            :value="dict.dictValue" />
+        </el-select>
+      </el-form-item>
+      <el-form-item>
+        <el-button v-no-more-click type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+        <el-button v-no-more-click icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+      </el-form-item>
+    </el-form>
+
+    <el-row :gutter="10" class="mb8">
+      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
+    </el-row>
+
+    <el-table v-loading="loading" :data="contractList" @selection-change="handleSelectionChange">
+      <el-table-column type="selection" width="55" align="center" />
+      <el-table-column label="编号" align="center" prop="id" />
+      <el-table-column label="合同编号" align="center" prop="contractNo" />
+      <el-table-column label="申请编号" align="center" prop="applyNo" />
+      <el-table-column label="供应商" align="center" prop="supplierName" />
+      <el-table-column label="联系人" align="center" prop="supplierContact" />
+      <el-table-column label="金额" align="center" prop="amount" />
+      <el-table-column label="送货方式" align="center" prop="deliveryType" :formatter="deliveryTypeFormat" />
+      <el-table-column label="签约日期" align="center" prop="signDate" width="180">
+        <template slot-scope="scope">
+          <span>{{ parseTime(scope.row.signDate, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="申请人" align="center" prop="applyUser" :formatter="applyUserFormat" />
+      <el-table-column label="申请时间" align="center" prop="applyTime" width="180">
+        <template slot-scope="scope">
+          <span>{{ parseTime(scope.row.applyTime, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="申请状态" align="center" prop="applyStatus" :formatter="applyStatusFormat" />
+      <el-table-column label="审核人" align="center" prop="auditUser" :formatter="auditUserFormat" />
+      <el-table-column label="审核时间" align="center" prop="auditTime" width="180">
+        <template slot-scope="scope">
+          <span>{{ parseTime(scope.row.auditTime, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="审核状态" align="center" prop="auditStatus" :formatter="auditStatusFormat" />
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+        <template slot-scope="scope">
+          <el-button v-no-more-click size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)">详情</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+
+    <pagination v-show="total>0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize"
+      @pagination="getList" />
+
+    <!-- 添加或修改采购合同对话框 -->
+    <el-dialog :title="title" :visible.sync="open" width="1000px" append-to-body>
+      <el-form ref="form" :model="form" :rules="rules" label-width="80px" :inline="true">
+        <el-form-item label="合同编号" prop="contractNo">
+          <el-input v-model="form.contractNo" placeholder="请输入合同编号" disabled />
+        </el-form-item>
+        <el-form-item label="申请单号" prop="applyNo">
+          <el-input v-model="form.applyNo" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="供应商" prop="supplierId">
+          <el-select v-model="form.supplierId" placeholder="请选择供应商" clearable filterable disabled>
+            <el-option v-for="dict in supplierIdOptions" :key="dict.dictValue" :label="dict.dictLabel"
+              :value="parseInt(dict.dictValue)"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="送货方式" prop="deliveryType">
+          <el-select v-model="form.deliveryType" placeholder="请选择送货方式" clearable filterable disabled>
+            <el-option v-for="dict in deliveryTypeOptions" :key="dict.dictValue" :label="dict.dictLabel"
+              :value="dict.dictValue"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="签约日期" prop="signDate">
+          <el-date-picker clearable size="small" v-model="form.signDate" type="date" value-format="yyyy-MM-dd"
+            placeholder="选择签约日期" disabled>
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="申请人" prop="applyUser">
+          <el-select v-model="form.applyUser" placeholder="" clearable filterable disabled>
+            <el-option v-for="dict in applyUserOptions" :key="dict.dictValue" :label="dict.dictLabel"
+              :value="dict.dictValue"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="申请时间" prop="applyTime">
+          <el-date-picker clearable size="small" v-model="form.applyTime" type="datetime"
+            value-format="yyyy-MM-dd HH:mm:ss" placeholder="" disabled>
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="申请状态" prop="applyStatus">
+          <el-select v-model="form.applyStatus" placeholder="请选择申请状态" clearable filterable disabled>
+            <el-option v-for="dict in applyStatusOptions" :key="dict.dictValue" :label="dict.dictLabel"
+              :value="dict.dictValue"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="审核人" prop="auditUser">
+          <el-select v-model="form.auditUser" placeholder="" clearable filterable disabled>
+            <el-option v-for="dict in auditUserOptions" :key="dict.dictValue" :label="dict.dictLabel"
+              :value="dict.dictValue"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="审核时间" prop="auditTime">
+          <el-date-picker clearable size="small" v-model="form.auditTime" type="datetime"
+            value-format="yyyy-MM-dd HH:mm:ss" placeholder="" disabled>
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="审核状态" prop="auditStatus">
+          <el-select v-model="form.auditStatus" placeholder="" clearable filterable disabled>
+            <el-option v-for="dict in auditStatusOptions" :key="dict.dictValue" :label="dict.dictLabel"
+              :value="dict.dictValue"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="审核意见" prop="auditComment">
+          <el-input v-model="form.auditComment" type="textarea" placeholder=""/>
+        </el-form-item>
+        <el-form-item label="备注" prop="remark">
+          <el-input v-model="form.remark" type="textarea" placeholder="" disabled />
+        </el-form-item>
+        <el-divider content-position="center">合同物料明细信息</el-divider>
+        <el-table :data="scmPurchaseContractDetailList" :row-class-name="rowScmPurchaseContractDetailIndex"
+          ref="scmPurchaseContractDetail">
+          <el-table-column label="序号" align="center" prop="index" width="50" />
+          <el-table-column label="物料" prop="materialName" width="200"></el-table-column>
+          <el-table-column label="型号" prop="materialModel" width="100"></el-table-column>
+          <el-table-column label="规格" prop="materialSpecification"></el-table-column>
+          <el-table-column label="单价" prop="price" width="150"></el-table-column>
+          <el-table-column label="采购数量" prop="quantity" width="140"></el-table-column>
+          <el-table-column label="金额" prop="amount" width="150"></el-table-column>
+          <el-table-column label="需求日期" prop="requireDate" width="240"></el-table-column>
+          <el-table-column label="备注" prop="detailRemark" width="150"></el-table-column>
+        </el-table>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button v-no-more-click v-if="form.applyStatus!='2'" type="primary" @click="submitForm('1')">通 过</el-button>
+        <el-button v-no-more-click v-if="form.applyStatus!='2'" type="warning" @click="submitForm('0')">驳 回</el-button>
+        <el-button v-no-more-click @click="cancel">取 消</el-button>
+      </div>
+    </el-dialog>
+  </div>
+</template>
+
+<script>
+  import {
+    listContract4Audit,
+    getContract,
+    auditContract,
+  } from "@/api/purchase/contract";
+
+  export default {
+    name: "ContractAudit",
+    components: {},
+    data() {
+      let checkAuditComment = (rule, value, callback) => {
+        if (this.form.auditStatus == '0') {
+          if (!value) {
+            callback(new Error('请输入审核意见'));
+          }
+        }
+        callback();
+      }
+      return {
+        material: null,
+        currentRowIndex: null,
+        materialSelectOpen: false,
+        // 遮罩层
+        loading: true,
+        // 选中数组
+        ids: [],
+        // 子表选中数据
+        checkedScmPurchaseContractDetail: [],
+        // 非单个禁用
+        single: true,
+        // 非多个禁用
+        multiple: true,
+        // 显示搜索条件
+        showSearch: true,
+        // 总条数
+        total: 0,
+        // 采购合同表格数据
+        contractList: [],
+        // 合同物料明细表格数据
+        scmPurchaseContractDetailList: [],
+        // 弹出层标题
+        title: "",
+        // 是否显示弹出层
+        open: false,
+        // 供应商id字典
+        supplierIdOptions: [],
+        // 送货方式字典
+        deliveryTypeOptions: [],
+        // 签约日期时间范围
+        daterangeSignDate: [],
+        // 申请人字典
+        applyUserOptions: [],
+        // 申请时间时间范围
+        daterangeApplyTime: [],
+        // 申请状态字典
+        applyStatusOptions: [],
+        // 审核人字典
+        auditUserOptions: [],
+        // 审核时间时间范围
+        daterangeAuditTime: [],
+        // 审核状态字典
+        auditStatusOptions: [],
+        // 查询参数
+        queryParams: {
+          pageNum: 1,
+          pageSize: 10,
+          contractNo: null,
+          applyId: null,
+          applyNo: null,
+          supplierId: null,
+          deliveryType: null,
+          signDate: null,
+          applyUser: null,
+          applyTime: null,
+          applyStatus: null,
+          auditUser: null,
+          auditTime: null,
+          auditStatus: null,
+          orderByColumn: 'apply_time',
+          isAsc: 'desc',
+        },
+        // 表单参数
+        form: {},
+        // 表单校验
+        rules: {
+          auditComment: [{
+            validator: checkAuditComment,
+            trigger: 'blur'
+          }]
+        }
+      };
+    },
+    created() {
+      this.getQueryData("query_supplier").then(res => {
+        this.supplierIdOptions = res.data;
+      });
+      this.getDicts("scm_delivery_type").then(response => {
+        this.deliveryTypeOptions = response.data;
+      });
+      this.getQueryData("query_user").then(res => {
+        this.applyUserOptions = res.data;
+      });
+      this.getDicts("apply_status").then(response => {
+        this.applyStatusOptions = response.data;
+      });
+      this.getQueryData("query_user").then(res => {
+        this.auditUserOptions = res.data;
+      });
+      this.getDicts("audit_status").then(response => {
+        this.auditStatusOptions = response.data;
+      });
+      this.getList();
+    },
+    watch: {
+      'scmPurchaseContractDetailList': {
+        handler(newVal, oldVal) {
+          this.form.scmPurchaseContractDetailList = newVal;
+        },
+        immediate: true,
+        deep: true,
+      }
+    },
+    methods: {
+      //选择申请回调函数
+      handleApplySelected(list) {
+        if (list && list.length > 0) {
+          let apply = list[0];
+          this.form.applyId = apply.id;
+          this.form.applyNo = apply.applyNo;
+          // 根据申请id获取contractDetailList
+          listContractDetailByApplyId(apply.id).then(res => {
+            this.scmPurchaseContractDetailList = res.data;
+          })
+        }
+        this.applySelectOpen = false;
+      },
+      //选择申请
+      handleSelectApply() {
+        this.applySelectOpen = true;
+      },
+      //取消选择申请
+      handleApplyCancel() {
+        this.applySelectOpen = false;
+      },
+      //选择物料处理函数
+      handleSelectMaterial(index) {
+        this.materialSelectOpen = true;
+        this.currentRowIndex = index;
+      },
+      handleMaterialCancel() {
+        this.materialSelectOpen = false;
+      },
+      //选择物料回调函数
+      handleMaterialSelected(list) {
+        if (list && list.length > 0) {
+          this.material = list[0];
+          this.scmPurchaseContractDetailList[this.currentRowIndex].materialId = this.material.id;
+          this.scmPurchaseContractDetailList[this.currentRowIndex].materialName = this.material.name;
+          this.scmPurchaseContractDetailList[this.currentRowIndex].materialCode = this.material.code;
+          this.scmPurchaseContractDetailList[this.currentRowIndex].materialModel = this.material.model;
+          this.scmPurchaseContractDetailList[this.currentRowIndex].materialSpecification = this.material.specification;
+          this.scmPurchaseContractDetailList[this.currentRowIndex].materialUnit = this.material.unit;
+          this.scmPurchaseContractDetailList[this.currentRowIndex].price = this.material.price;
+        }
+        this.materialSelectOpen = false;
+      },
+      /** 查询采购合同列表 */
+      getList() {
+        this.loading = true;
+        this.queryParams.params = {};
+        if (null != this.daterangeSignDate && '' != this.daterangeSignDate) {
+          this.queryParams.params["beginSignDate"] = this.daterangeSignDate[0];
+          this.queryParams.params["endSignDate"] = this.daterangeSignDate[1];
+        }
+        if (null != this.daterangeApplyTime && '' != this.daterangeApplyTime) {
+          this.queryParams.params["beginApplyTime"] = this.daterangeApplyTime[0];
+          this.queryParams.params["endApplyTime"] = this.daterangeApplyTime[1];
+        }
+        if (null != this.daterangeAuditTime && '' != this.daterangeAuditTime) {
+          this.queryParams.params["beginAuditTime"] = this.daterangeAuditTime[0];
+          this.queryParams.params["endAuditTime"] = this.daterangeAuditTime[1];
+        }
+        listContract4Audit(this.queryParams).then(response => {
+          this.contractList = response.rows;
+          this.total = response.total;
+          this.loading = false;
+        });
+      },
+      // 供应商id字典翻译
+      supplierIdFormat(row, column) {
+        return this.selectDictLabel(this.supplierIdOptions, row.supplierId);
+      },
+      // 送货方式字典翻译
+      deliveryTypeFormat(row, column) {
+        return this.selectDictLabel(this.deliveryTypeOptions, row.deliveryType);
+      },
+      // 申请人字典翻译
+      applyUserFormat(row, column) {
+        return this.selectDictLabel(this.applyUserOptions, row.applyUser);
+      },
+      // 申请状态字典翻译
+      applyStatusFormat(row, column) {
+        return this.selectDictLabel(this.applyStatusOptions, row.applyStatus);
+      },
+      // 审核人字典翻译
+      auditUserFormat(row, column) {
+        return this.selectDictLabel(this.auditUserOptions, row.auditUser);
+      },
+      // 审核状态字典翻译
+      auditStatusFormat(row, column) {
+        return this.selectDictLabel(this.auditStatusOptions, row.auditStatus);
+      },
+      // 取消按钮
+      cancel() {
+        this.open = false;
+        this.reset();
+      },
+      // 表单重置
+      reset() {
+        this.form = {
+          id: null,
+          contractNo: null,
+          applyId: null,
+          applyNo: null,
+          supplierId: null,
+          amount: null,
+          deliveryType: null,
+          signDate: null,
+          applyUser: null,
+          applyTime: null,
+          applyStatus: null,
+          auditUser: null,
+          auditTime: null,
+          auditStatus: null,
+          auditComment: null,
+          createTime: null,
+          remark: null,
+          scmPurchaseContractDetailList: [],
+        };
+        this.scmPurchaseContractDetailList = [];
+        this.resetForm("form");
+      },
+      /** 搜索按钮操作 */
+      handleQuery() {
+        this.queryParams.pageNum = 1;
+        this.getList();
+      },
+      /** 重置按钮操作 */
+      resetQuery() {
+        this.daterangeSignDate = [];
+        this.daterangeApplyTime = [];
+        this.daterangeAuditTime = [];
+        this.resetForm("queryForm");
+        this.handleQuery();
+      },
+      // 多选框选中数据
+      handleSelectionChange(selection) {
+        this.ids = selection.map(item => item.id)
+        this.single = selection.length !== 1
+        this.multiple = !selection.length
+      },
+      /** 新增按钮操作 */
+      handleAdd() {
+        this.reset();
+        this.open = true;
+        this.title = "添加采购合同";
+      },
+      /** 修改按钮操作 */
+      handleUpdate(row) {
+        this.reset();
+        const id = row.id || this.ids
+        getContract(id).then(response => {
+          this.form = response.data;
+          this.scmPurchaseContractDetailList = response.data.scmPurchaseContractDetailList;
+          this.open = true;
+          this.title = "审核采购合同";
+        });
+      },
+      /** 提交按钮 */
+      submitForm(status) {
+        this.form.auditStatus = status;
+        this.$refs["form"].validate(valid => {
+          if (valid) {
+            auditContract(this.form).then(response => {
+              this.msgSuccess("审核成功");
+              this.open = false;
+              this.getList();
+            });
+          }
+        });
+      },
+      /** 合同物料明细序号 */
+      rowScmPurchaseContractDetailIndex({
+        row,
+        rowIndex
+      }) {
+        row.index = rowIndex + 1;
+      },
+    }
+  };
+
+</script>

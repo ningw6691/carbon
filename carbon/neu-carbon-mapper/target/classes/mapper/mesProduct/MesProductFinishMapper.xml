@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neu.carbon.mes.mapper.MesProductFinishMapper">
+    
+    <resultMap type="MesProductFinish" id="MesProductFinishResult">
+        <result property="id"    column="id"    />
+        <result property="planId"    column="plan_id"    />
+        <result property="scheduleId"    column="schedule_id"    />
+        <result property="jobId"    column="job_id"    />
+        <result property="materialId"    column="material_id"    />
+        <result property="finishDate"    column="finish_date"    />
+        <result property="finishQuantity"    column="finish_quantity"    />
+        <result property="remark"    column="remark"    />
+        <result property="planNo"    column="plan_no"    />
+        <result property="planName"    column="plan_name"    />
+        <result property="jobName"    column="job_name"    />
+        <result property="materialName"    column="material_name"    />
+        <result property="materialModel"    column="material_model"    />
+        <result property="materialSpecification"    column="material_specification"    />
+        <result property="materialUnit"    column="material_unit"    />
+        <result property="batchNo"    column="batch_no"    />
+        <result property="status"    column="status"    />
+        <result property="serialNo"    column="serial_no"    />
+    </resultMap>
+
+    <sql id="selectMesProductFinishVo">
+        SELECT t.id, t.plan_id, t.schedule_id, t.job_id, t.material_id, t.finish_date, t.finish_quantity, t.remark,t.batch_no,t.status,t.serial_no,
+		p.`serial_no` plan_no,p.`name` plan_name,
+		j.`name` job_name,
+		m.`name` material_name,m.`model` material_model,m.`specification` material_specification,m.`unit` material_unit
+		FROM mes_product_finish t
+		LEFT JOIN `mes_product_plan` p ON t.`plan_id` = p.`id`
+		LEFT JOIN `mes_product_schedule` s ON s.`id` = t.`schedule_id`
+		LEFT JOIN `mes_product_job` j ON j.`id` = t.`job_id`
+		LEFT JOIN `wms_material_info` m ON m.`id` = t.`material_id`
+    </sql>
+
+    <select id="selectMesProductFinishList" parameterType="MesProductFinish" resultMap="MesProductFinishResult">
+        <include refid="selectMesProductFinishVo"/>
+        <where> 
+        	<if test="serialNo != null  and serialNo != ''"> and t.serial_no = #{serialNo}</if> 
+            <if test="planId != null "> and t.plan_id = #{planId}</if>
+            <if test="status != null and status != ''"> and t.status = #{status}</if>
+            <if test="scheduleId != null "> and t.schedule_id = #{scheduleId}</if>
+            <if test="jobId != null "> and t.job_id = #{jobId}</if>
+            <if test="materialId != null "> and t.material_id = #{materialId}</if>
+            <if test="params.beginFinishDate != null and params.beginFinishDate != '' and params.endFinishDate != null and params.endFinishDate != ''"> and t.finish_date between #{params.beginFinishDate} and #{params.endFinishDate}</if>
+        	<if test="materialName != null  and materialName != ''"> and m.name like concat('%', #{materialName}, '%')</if>
+        	<if test="planNo != null  and planNo != ''"> and p.`serial_no` like concat('%', #{planNo}, '%')</if>
+        	<if test="jobName != null  and jobName != ''"> and j.`name` like concat('%', #{jobName}, '%')</if>
+        	<if test="batchNo != null  and batchNo != ''"> and t.batch_no like concat('%', #{batchNo}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectMesProductFinishById" parameterType="Long" resultMap="MesProductFinishResult">
+        <include refid="selectMesProductFinishVo"/>
+        where t.id = #{id}
+    </select>
+        
+    <insert id="insertMesProductFinish" parameterType="MesProductFinish" useGeneratedKeys="true" keyProperty="id">
+        insert into mes_product_finish
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+        	<if test="serialNo != null">serial_no,</if>
+            <if test="planId != null">plan_id,</if>
+            <if test="scheduleId != null">schedule_id,</if>
+            <if test="jobId != null">job_id,</if>
+            <if test="materialId != null">material_id,</if>
+            <if test="finishDate != null">finish_date,</if>
+            <if test="finishQuantity != null">finish_quantity,</if>
+            <if test="batchNo != null and batchNo != ''">batch_no,</if>
+            <if test="status != null">status,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+        	<if test="serialNo != null">#{serialNo},</if>
+            <if test="planId != null">#{planId},</if>
+            <if test="scheduleId != null">#{scheduleId},</if>
+            <if test="jobId != null">#{jobId},</if>
+            <if test="materialId != null">#{materialId},</if>
+            <if test="finishDate != null">#{finishDate},</if>
+            <if test="finishQuantity != null">#{finishQuantity},</if>
+            <if test="batchNo != null and batchNo != ''">#{batchNo},</if>
+            <if test="status != null">#{status},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateMesProductFinish" parameterType="MesProductFinish">
+        update mes_product_finish
+        <trim prefix="SET" suffixOverrides=",">
+        	<if test="serialNo != null">serial_no = #{serialNo},</if>
+            <if test="planId != null">plan_id = #{planId},</if>
+            <if test="scheduleId != null">schedule_id = #{scheduleId},</if>
+            <if test="jobId != null">job_id = #{jobId},</if>
+            <if test="materialId != null">material_id = #{materialId},</if>
+            <if test="finishDate != null">finish_date = #{finishDate},</if>
+            <if test="finishQuantity != null">finish_quantity = #{finishQuantity},</if>
+            <if test="batchNo != null and batchNo != ''">batch_no = #{batchNo},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteMesProductFinishById" parameterType="Long">
+        delete from mes_product_finish where id = #{id}
+    </delete>
+
+    <delete id="deleteMesProductFinishByIds" parameterType="String">
+        delete from mes_product_finish where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
